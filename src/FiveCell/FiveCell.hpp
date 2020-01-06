@@ -1,8 +1,8 @@
 #ifndef FIVE_CELL_HPP
 #define FIVE_CELL_HPP
 
-#define NUM_RAYS 5 
-#define MAX_MANDEL_STEPS 512 
+//#define NUM_RAYS 5 
+//#define MAX_MANDEL_STEPS 512 
 
 #include <string>
 #include <vector>
@@ -68,11 +68,11 @@ private:
 	CsoundSession *session;
 	MYFLT* hrtfVals[3];
 	MYFLT* randomFrequencyVal;
-	MYFLT* m_pRmsOut;
+	//MYFLT* m_pRmsOut;
 	MYFLT* m_cspSineControlVal;
-	MYFLT* m_cspMandelEscapeVals[MAX_MANDEL_STEPS];
-	MYFLT* m_cspMandelEscapeIndex;
-	MYFLT* m_cspMaxSteps;
+	//MYFLT* m_cspMandelEscapeVals[MAX_MANDEL_STEPS];
+	//MYFLT* m_cspMandelEscapeIndex;
+	//MYFLT* m_cspMaxSteps;
 
 	//raymarching quad
 	unsigned int m_uiNumSceneVerts;

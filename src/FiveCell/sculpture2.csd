@@ -207,7 +207,7 @@ kDistanceVal chnget "distance"
 kDist portk kDistanceVal, kPortTime ;to filter out audio artifacts due to the distance changing too quickly
 
 ;asig	sum	gaOut0,	gaOut1
-asig = gaOut2
+asig = gaOut1
 
 aLeftSig, aRightSig  hrtfmove2	asig, kAzimuthVal, kElevationVal, "hrtf-48000-left.dat", "hrtf-48000-right.dat", 4, 9.0, 48000
 aLeftSig = aLeftSig / (kDist + 0.00001)
@@ -237,7 +237,7 @@ i1	2	10000
 
 i2	2	10000
 
-i3	2	10000	
+;i3	2	10000	
 
 i12	2	10000
 
