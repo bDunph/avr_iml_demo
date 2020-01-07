@@ -1,8 +1,8 @@
 #version 410
 
 #define DO_FRESNEL 0
-#define DO_REFLECTION 1
-#define DO_REFRACTION 1
+#define DO_REFLECTION 0
+#define DO_REFRACTION 0
 
 // refractive index of some common materials:
 // http://hyperphysics.phy-astr.gsu.edu/hbase/Tables/indrf.html
@@ -90,7 +90,7 @@ float mandelbulbSDF(vec3 pos) {
     	if(r > 1.5) return r-1.2;
     	vec3 z = pos;
     	float dr = 1.0, theta, phi;
-    	    for (int i = 0; i < 10; i++) {
+    	    for (int i = 0; i < 5; i++) {
     	    	r = length(z);
     	    	if (r>1.5) break;
     	    	//theta = acos((z.y/r) + (0.01 *  sineControlVal));
@@ -117,7 +117,7 @@ float mandelbulbSDF(vec3 pos) {
 float sceneSDF(vec3 pos)
 {
 
-	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / 0.2) * 0.2;
+	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / 0.8) * 0.8;
 
 	vec3 newPos = pos;
 	float function1x = 0.09*sin(newPos.x*0.4)*newPos.x;

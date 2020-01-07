@@ -295,7 +295,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	*hrtfVals[2] = (MYFLT)rCamSpace;
 
 	//sine function
-	sineControlVal = sin(glfwGetTime());
+	sineControlVal = sin(glfwGetTime() * 0.25f);
 
 	*m_cspSineControlVal = (MYFLT)sineControlVal;
 

@@ -85,8 +85,8 @@ iamp    init ampdbfs(-12)
 ; bow excitator-------------------------------------
 
 kamp = ampdbfs(-24); - (0.01 * kSineControlVal)
-kfreq = 55; + (0.5 * kSineControlVal) 
-kpres = 2
+kfreq = 55; 
+kpres = 2; * kSineControlVal
 krat = 0.127236
 kvibf = 3
 kvamp = ampdbfs(-24);ampdbfs(-5.995) + (0.01 * kSineControlVal)
@@ -111,8 +111,8 @@ ares5	mode	aexc,	2063.6,	540; - (kSineControlVal * 100)
 
 ares	sum	ares1,	ares2,	ares3,	ares4,	ares5
 
-;gaOut1 = (aexc + ares) * kSineControlVal 
-gaOut1 = aexc + ares
+gaOut1 = (aexc + ares) * kSineControlVal 
+;gaOut1 = aexc + ares
 	;outs	gaOut1,	gaOut1
 
 ;kRms	rms	gaOut1
