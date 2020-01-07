@@ -878,7 +878,7 @@ void Graphics::UpdateSceneData(std::unique_ptr<VR_Manager>& vrm){
 	//if(!m_bPBOFirstFrame) TransferDataToCPU();	
 
 	//update variables for fiveCell
-	fiveCell.update(m_mat4CurrentViewMatrix, cameraPosition, machineLearning);
+	fiveCell.update(m_mat4CurrentViewMatrix, cameraPosition, machineLearning, m_vec4ControllerWorldPos[0]);
 
 	//std::cout << shaderData.size() << std::endl;
 	// write shaderData to file each frame to see output
@@ -1258,7 +1258,9 @@ void Graphics::RenderScene(vr::Hmd_Eye nEye, std::unique_ptr<VR_Manager>& vrm)
 
 		glm::vec4 m_vFarPlaneDimensions = vrm->GetFarPlaneDimensions(nEye);
 		raymarchData.tanFovYOver2 = m_vFarPlaneDimensions.w;
-	} else {
+	} 
+	else 
+	{
 		//*** put manual matrices here***//
 		currentProjMatrix = m_matDevProjMatrix;  
 		//m_matDevViewMatrix = glm::lookAt(m_vec3DevCamPos, m_vec3DevCamPos + m_vec3DevCamFront, m_vec3DevCamUp);	
@@ -1316,6 +1318,8 @@ void Graphics::RenderScene(vr::Hmd_Eye nEye, std::unique_ptr<VR_Manager>& vrm)
 			glm::mat4 matMVP = vrm->GetCurrentViewProjectionMatrix(nEye) * matDeviceToTracking;
 			glUniformMatrix4fv(m_nRenderModelMatrixLocation, 1, GL_FALSE, &matMVP[0][0]);
 			vrm->m_rHand[i].m_pRenderModel->Draw();
+			glm::mat4 matModelViewController = vrm->GetCurrentViewMatrix() * matDeviceToTracking;
+			m_vec4ControllerWorldPos[i] = glm::vec3(matModelViewController[3][0], matModelViewController[3][1], matModelViewController[3][2]); 	
 		}
 
 		glUseProgram(0);

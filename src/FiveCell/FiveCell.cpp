@@ -246,7 +246,7 @@ bool FiveCell::BSetupRaymarchQuad(GLuint shaderProg)
 //*******************************************************************************************
 // Update Stuff Here
 //*******************************************************************************************
-void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& machineLearning){
+void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& machineLearning, glm::vec3 controllerWorldPos){
 
 	//rms value from Csound
 	//modulateVal = *m_pRmsOut;			
@@ -482,26 +482,31 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 // Machine Learning 
 //*********************************************************************************************
 	bool currentRandomState = m_bPrevRandomState;
-	if(machineLearning.bRandomParams != currentRandomState && machineLearning.bRandomParams == true){
+
+	// randomise parameters
+	if(machineLearning.bRandomParams != currentRandomState && machineLearning.bRandomParams == true)
+	{
 		//random audio params
-		std::uniform_real_distribution<float> distribution(1, 10);
+		std::uniform_real_distribution<float> distribution(1, 100);
 		std::random_device rd;
 		std::default_random_engine generator (rd());
 		float val = distribution(generator);
 		*randomFrequencyVal = (MYFLT)val;
 			
 		//random visual params
-		std::uniform_real_distribution<float> distribution2(1.0, 4.0);
+		std::uniform_real_distribution<float> distribution2(0.1f, 0.8f);
 		std::random_device rd2;
 		std::default_random_engine gen2 (rd2());
 		sizeVal = distribution2(gen2);
 	}
 	m_bPrevRandomState = machineLearning.bRandomParams;
 
-	if(machineLearning.bRecord){
-		inputData.push_back((double)viewerPosWorldSpace.x);	
-		inputData.push_back((double)viewerPosWorldSpace.y);	
-		inputData.push_back((double)viewerPosWorldSpace.z);	
+	// record training examples
+	if(machineLearning.bRecord)
+	{
+		inputData.push_back((double)controllerWorldPos.x);	
+		inputData.push_back((double)controllerWorldPos.y);	
+		inputData.push_back((double)controllerWorldPos.z);	
 
 		outputData.push_back((double)*randomFrequencyVal);
 		outputData.push_back((double)sizeVal);
@@ -520,8 +525,10 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	}
 	machineLearning.bRecord = false;
 
+	// train model
 	bool currentTrainState = m_bPrevTrainState;
-	if(machineLearning.bTrainModel != currentTrainState && machineLearning.bTrainModel == true){
+	if(machineLearning.bTrainModel != currentTrainState && machineLearning.bTrainModel == true)
+	{
 
 #ifdef __APPLE__
 		staticRegression.train(trainingData);
@@ -534,14 +541,17 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	m_bPrevTrainState = machineLearning.bTrainModel;
 
 #ifdef __APPLE__
+
+	// run/stop model
 	bool currentHaltState = m_bPrevHaltState;
-	if(machineLearning.bRunModel && !machineLearning.bHaltModel){
+	if(machineLearning.bRunModel && !machineLearning.bHaltModel)
+	{
 		std::vector<double> modelOut;
 		std::vector<double> modelIn;
 
-		modelIn.push_back((double)viewerPosWorldSpace.x);
-		modelIn.push_back((double)viewerPosWorldSpace.y);
-		modelIn.push_back((double)viewerPosWorldSpace.z);
+		modelIn.push_back((double)controllerWorldPos.x);
+		modelIn.push_back((double)controllerWorldPos.y);
+		modelIn.push_back((double)controllerWorldPos.z);
 
 		modelOut = staticRegression.run(modelIn);
 
@@ -554,19 +564,22 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		std::cout << "Model Running" << std::endl;
 		modelIn.clear();
 		modelOut.clear();
-	} else if(!machineLearning.bRunModel && machineLearning.bHaltModel != currentHaltState){
+	} 
+	else if(!machineLearning.bRunModel && machineLearning.bHaltModel != currentHaltState)
+	{
 		machineLearning.bRunModel = false;
 		std::cout << "Model Stopped" << std::endl;
 	}
 	m_bPrevHaltState = machineLearning.bHaltModel;
 #elif _WIN32
-	if(machineLearning.bRunModel){
+	if(machineLearning.bRunModel)
+	{
 		std::vector<double> modelOut;
 		std::vector<double> modelIn;
 
-		modelIn.push_back((double)viewerPosWorldSpace.x);
-		modelIn.push_back((double)viewerPosWorldSpace.y);
-		modelIn.push_back((double)viewerPosWorldSpace.z);
+		modelIn.push_back((double)controllerWorldPos.x);
+		modelIn.push_back((double)controllerWorldPos.y);
+		modelIn.push_back((double)controllerWorldPos.z);
 
 		modelOut = staticRegression.run(modelIn);
 
@@ -578,7 +591,8 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		sizeVal = (float)modelOut[1];
 
 		bool prevRunMsgState = m_bCurrentRunMsgState;
-		if(m_bRunMsg != prevRunMsgState && m_bRunMsg == true){
+		if(m_bRunMsg != prevRunMsgState && m_bRunMsg == true)
+		{
 			std::cout << "Model Running" << std::endl;
 			m_bRunMsg = !m_bRunMsg;
 		}
@@ -587,9 +601,12 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		modelIn.clear();
 		modelOut.clear();
 		m_bMsg = true;
-	} else if(!machineLearning.bRunModel){
+	} 
+	else if(!machineLearning.bRunModel)
+	{
 		bool prevMsgState = m_bCurrentMsgState;
-		if(m_bMsg != prevMsgState && m_bMsg == true){
+		if(m_bMsg != prevMsgState && m_bMsg == true)
+		{
 			std::cout << "Model Stopped" << std::endl;
 			m_bMsg = !m_bMsg;
 		}
@@ -598,10 +615,12 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	}
 #endif
 		
+	// save model
 	std::string mySavedModel = "mySavedModel.json";
 	bool currentSaveState = m_bPrevSaveState;
 #ifdef __APPLE__
-	if(machineLearning.bSaveTrainingData!= currentSaveState && machineLearning.bSaveTrainingData == true){
+	if(machineLearning.bSaveTrainingData!= currentSaveState && machineLearning.bSaveTrainingData == true)
+	{
 
 		trainingData.writeJSON(mySavedModel);	
 
@@ -609,7 +628,8 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	}
 	m_bPrevSaveState = machineLearning.bSaveTrainingData;
 #elif _WIN32
-	if(machineLearning.bSaveModel!= currentSaveState && machineLearning.bSaveModel == true){
+	if(machineLearning.bSaveModel!= currentSaveState && machineLearning.bSaveModel == true)
+	{
 
 		staticRegression.writeJSON(mySavedModel);
 		std::cout << "Saving Training Data" << std::endl;
@@ -617,9 +637,11 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	m_bPrevSaveState = machineLearning.bSaveModel;
 #endif
 
+	// load model
 	bool currentLoadState = m_bPrevLoadState;
 #ifdef __APPLE__
-	if(machineLearning.bLoadTrainingData != currentLoadState && machineLearning.bLoadTrainingData == true){
+	if(machineLearning.bLoadTrainingData != currentLoadState && machineLearning.bLoadTrainingData == true)
+	{
 	
 		trainingData.readJSON(mySavedModel);
 		staticRegression.train(trainingData);
@@ -628,7 +650,8 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	}
 	m_bPrevLoadState = machineLearning.bLoadTrainingData;
 #elif _WIN32
-	if(machineLearning.bLoadModel != currentLoadState && machineLearning.bLoadModel == true){
+	if(machineLearning.bLoadModel != currentLoadState && machineLearning.bLoadModel == true)
+	{
 	
 		staticRegression.readJSON(mySavedModel);	
 
@@ -643,7 +666,8 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 //*********************************************************************************************
 // Draw Stuff Here
 //*********************************************************************************************
-void FiveCell::draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, RaymarchData& raymarchData, GLuint mengerProg){
+void FiveCell::draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, RaymarchData& raymarchData, GLuint mengerProg)
+{
 		
 	//matrices for raymarch shaders
 	modelViewEyeMat = eyeMat * viewMat * raymarchQuadModelMatrix;

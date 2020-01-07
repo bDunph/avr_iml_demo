@@ -217,6 +217,8 @@ private:
 	bool m_bPboIndex;
 
 	GLuint m_gluiDummyTexture;
+
+	glm::vec3 m_vec4ControllerWorldPos[2];
 };
 
 

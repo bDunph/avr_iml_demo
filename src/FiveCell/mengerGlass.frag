@@ -62,6 +62,7 @@ uniform mat4 MVEPMat;
 uniform float sineControlVal;
 
 uniform samplerCube skyboxTex;
+uniform float randSize;
 //uniform sampler2D groundReflectionTex;
 
 in vec4 nearPos;
@@ -117,7 +118,7 @@ float mandelbulbSDF(vec3 pos) {
 float sceneSDF(vec3 pos)
 {
 
-	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / 0.8) * 0.8;
+	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / randSize) * randSize;
 
 	vec3 newPos = pos;
 	float function1x = 0.09*sin(newPos.x*0.4)*newPos.x;
