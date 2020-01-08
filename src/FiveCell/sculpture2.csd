@@ -64,6 +64,8 @@ kSineControlVal	chnget	"sineControlVal"
 iamp    init ampdbfs(-12)
 
 kFreqScale chnget "randFreq" ; random frequency scale value sent from application
+kWgbowAmpVal chnget "randAmp"
+kWgbowPressureVal chnget "randPressure"
 
 ; mallet excitator----------------------------------
 
@@ -84,9 +86,9 @@ kFreqScale chnget "randFreq" ; random frequency scale value sent from applicatio
 
 ; bow excitator-------------------------------------
 
-kamp = ampdbfs(-24); - (0.01 * kSineControlVal)
-kfreq = 55 + kFreqScale; 
-kpres = 2; * kSineControlVal
+kamp = ampdbfs(-24) * kWgbowAmpVal 
+kfreq = 55 + kFreqScale 
+kpres = kWgbowPressureVal
 krat = 0.127236
 kvibf = 3
 kvamp = ampdbfs(-24);ampdbfs(-5.995) + (0.01 * kSineControlVal)

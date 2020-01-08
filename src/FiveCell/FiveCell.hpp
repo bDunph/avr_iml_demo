@@ -67,7 +67,9 @@ private:
 	//Csound
 	CsoundSession *session;
 	MYFLT* hrtfVals[3];
-	MYFLT* randomFrequencyVal;
+	MYFLT* randWgbowFreqVal;
+	MYFLT* randWgbowAmpVal;
+	MYFLT* randWgbowPressureVal;
 	//MYFLT* m_pRmsOut;
 	MYFLT* m_cspSineControlVal;
 	//MYFLT* m_cspMandelEscapeVals[MAX_MANDEL_STEPS];
@@ -164,5 +166,7 @@ private:
 	float sineControlVal;
 
 	float m_iMaxSteps;
+
+	
 };
 #endif

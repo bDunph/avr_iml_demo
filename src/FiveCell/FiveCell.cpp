@@ -2,12 +2,12 @@
 
 #include <cstdio>
 #include <cstdarg>
-#include <random>
 #include <ctime>
 #include <assert.h>
 #include <math.h>
 #include <cmath>
 #include <iostream>
+#include <random>
 
 #include "stb_image.h"
 
@@ -62,11 +62,20 @@ bool FiveCell::setup(std::string csd){
 		return false;
 	}
 	const char* randFreq = "randFreq";
-	if(session->GetChannelPtr(randomFrequencyVal, randFreq, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(randWgbowFreqVal, randFreq, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
 		std::cout << "GetChannelPtr could not get the randFreq value" << std::endl;
 		return false;
 	} 
-
+	const char* randAmp = "randAmp";
+	if(session->GetChannelPtr(randWgbowAmpVal, randAmp, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the randFreq value" << std::endl;
+		return false;
+	}
+	const char* randPressure = "randPressure";
+	if(session->GetChannelPtr(randWgbowPressureVal, randPressure, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the randFreq value" << std::endl;
+		return false;
+	}
 	const char* sineVal = "sineControlVal";
 	if(session->GetChannelPtr(m_cspSineControlVal, sineVal, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
 		std::cout << "GetChannelPtr could not get the sineControlVal value" << std::endl;
@@ -486,18 +495,35 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	// randomise parameters
 	if(machineLearning.bRandomParams != currentRandomState && machineLearning.bRandomParams == true)
 	{
-		//random audio params
-		std::uniform_real_distribution<float> distribution(1, 100);
+		//random device
 		std::random_device rd;
-		std::default_random_engine generator (rd());
-		float val = distribution(generator);
-		*randomFrequencyVal = (MYFLT)val;
+
+		//random audio params
+		
+		// wgbow parameters
+
+		// amplitude
+		std::uniform_real_distribution<float> distWgbowAmp(0.9f, 1.0f);
+		std::default_random_engine genWgbowAmp(rd());
+		float wgbowAmpVal = distWgbowAmp(genWgbowAmp);
+		*randWgbowAmpVal = (MYFLT)wgbowAmpVal;
 			
+		// frequency
+		std::uniform_real_distribution<float> distWgbowFreq(55.0f, 10000.0f);
+		std::default_random_engine genWgbowFreq(rd());
+		float wgbowFreqVal = distWgbowFreq(genWgbowFreq);
+		*randWgbowFreqVal = (MYFLT)wgbowFreqVal;
+
+		// bow pressure
+		std::uniform_real_distribution<float> distWgbowPressure(1.0f, 5.0f);
+		std::default_random_engine genWgbowPressure(rd());
+		float wgbowPressureVal = distWgbowPressure(genWgbowPressure);
+		*randWgbowPressureVal = (MYFLT)wgbowPressureVal;	
+
 		//random visual params
 		std::uniform_real_distribution<float> distribution2(0.1f, 0.8f);
-		std::random_device rd2;
-		std::default_random_engine gen2 (rd2());
-		sizeVal = distribution2(gen2);
+		std::default_random_engine generator2 (rd());
+		sizeVal = distribution2(generator2);
 	}
 	m_bPrevRandomState = machineLearning.bRandomParams;
 
@@ -508,7 +534,9 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		inputData.push_back((double)controllerWorldPos.y);	
 		inputData.push_back((double)controllerWorldPos.z);	
 
-		outputData.push_back((double)*randomFrequencyVal);
+		outputData.push_back((double)*randWgbowAmpVal);
+		outputData.push_back((double)*randWgbowFreqVal);
+		outputData.push_back((double)*randWgbowPressureVal);
 		outputData.push_back((double)sizeVal);
 
 #ifdef __APPLE__
@@ -555,12 +583,22 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 		modelOut = staticRegression.run(modelIn);
 
-		if(modelOut[0] > 10.0f) modelOut[0] = 10.0f;
-		if(modelOut[0] < 1.0f) modelOut[0] = 1.0f;
-		*randomFrequencyVal = (MYFLT)modelOut[0];
-		if(modelOut[1] > 4.0f) modelOut[0] = 4.0f;
-		if(modelOut[1] < 1.0f) modelOut[0] = 1.0f;
-		sizeVal = (float)modelOut[1];
+		if(modelOut[0] > 1.0f) modelOut[0] = 1.0f;
+		if(modelOut[0] < 0.9f) modelOut[0] = 0.9f;
+		*randWgbowAmpVal = (MYFLT)modelOut[0];
+
+		if(modelOut[1] > 10000.0f) modelOut[0] = 10000.0f;
+		if(modelOut[1] < 55.0f) modelOut[0] = 55.0f;
+		*randWgbowFreqVal = (MYFLT)modelOut[1];
+
+		if(modelOut[2] > 5.0f) modelOut[2] = 5.0f;
+		if(modelOut[2] < 1.0f) modelOut[2] = 1.0f;
+		*randWgbowPressureVal = (MYFLT)modelOut[2];
+
+		if(modelOut[3] > 0.8f) modelOut[3] = 0.8f;
+		if(modelOut[3] < 0.1f) modelOut[3] = 0.1f;
+		sizeVal = (float)modelOut[3];
+ 
 		std::cout << "Model Running" << std::endl;
 		modelIn.clear();
 		modelOut.clear();
@@ -583,13 +621,22 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 		modelOut = staticRegression.run(modelIn);
 
-		if(modelOut[0] > 10.0f) modelOut[0] = 10.0f;
-		if(modelOut[0] < 1.0f) modelOut[0] = 1.0f;
-		*randomFrequencyVal = (MYFLT)modelOut[0];
-		if(modelOut[1] > 4.0f) modelOut[0] = 4.0f;
-		if(modelOut[1] < 1.0f) modelOut[0] = 1.0f;
-		sizeVal = (float)modelOut[1];
+		if(modelOut[0] > 1.0f) modelOut[0] = 1.0f;
+		if(modelOut[0] < 0.9f) modelOut[0] = 0.9f;
+		*randWgbowAmpVal = (MYFLT)modelOut[0];
 
+		if(modelOut[1] > 10000.0f) modelOut[0] = 10000.0f;
+		if(modelOut[1] < 55.0f) modelOut[0] = 55.0f;
+		*randWgbowFreqVal = (MYFLT)modelOut[1];
+
+		if(modelOut[2] > 5.0f) modelOut[2] = 5.0f;
+		if(modelOut[2] < 1.0f) modelOut[2] = 1.0f;
+		*randWgbowPressureVal = (MYFLT)modelOut[2];
+
+		if(modelOut[3] > 0.8f) modelOut[3] = 0.8f;
+		if(modelOut[3] < 0.1f) modelOut[3] = 0.1f;
+		sizeVal = (float)modelOut[3];
+		
 		bool prevRunMsgState = m_bCurrentRunMsgState;
 		if(m_bRunMsg != prevRunMsgState && m_bRunMsg == true)
 		{
