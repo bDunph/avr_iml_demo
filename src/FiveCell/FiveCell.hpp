@@ -70,6 +70,7 @@ private:
 	MYFLT* randWgbowFreqVal;
 	MYFLT* randWgbowAmpVal;
 	MYFLT* randWgbowPressureVal;
+	MYFLT* randWgbowPositionVal;
 	//MYFLT* m_pRmsOut;
 	MYFLT* m_cspSineControlVal;
 	//MYFLT* m_cspMandelEscapeVals[MAX_MANDEL_STEPS];
