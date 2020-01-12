@@ -13,6 +13,8 @@
 #define OBJECT_ABSORB_COLOUR vec3(8.0, 8.0, 3.0)
 #define OBJECT_ABSORB_COLOUR_2 vec3(0.3, 9.0, 9.0)
 
+#define NUM_FFT_BINS 512
+#
 struct Moonlight {
 	vec3 direction;
 	vec3 colour;
@@ -63,6 +65,9 @@ uniform float sineControlVal;
 
 uniform samplerCube skyboxTex;
 uniform float randSize;
+uniform float rmsModVal;
+uniform int numFftBins;
+uniform float fftAmpBins[NUM_FFT_BINS];
 //uniform sampler2D groundReflectionTex;
 
 in vec4 nearPos;
@@ -71,6 +76,9 @@ in vec2 texCoordsOut;
 
 layout(location = 0) out vec4 fragColorOut; 
 layout(location = 1) out vec4 dataOut;
+
+//int resX = mod(gl_FragCoord.x, numFftBins);
+//int resY = mod(gl_FragCoord.y, numFftBins);
 
 //----------------------------------------------------------------------------------------
 // Ground plane SDF from https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
@@ -86,8 +94,10 @@ float planeSDF(vec3 pos, vec4 normal){
 //----------------------------------------------------------------------------------------
 float mandelbulbSDF(vec3 pos) {
 
+	float fftVal = fftAmpBins[int(numFftBins * pos.z)];
 	float Power = 8.0;
     	float r = length(pos);
+	//r *= fftAmpBins[int(numFftBins * sineControlVal)];
     	if(r > 1.5) return r-1.2;
     	vec3 z = pos;
     	float dr = 1.0, theta, phi;
@@ -95,11 +105,11 @@ float mandelbulbSDF(vec3 pos) {
     	    	r = length(z);
     	    	if (r>1.5) break;
     	    	//theta = acos((z.y/r) + (0.01 *  sineControlVal));
-    	    	theta = acos(z.y/r);
+    	    	theta = acos(z.y/r) * (fftVal * 100.0);
     	    	//theta = acos(z.y/r) * sineControlVal;
     	    	//phi = atan(z.z,z.x) * sineControlVal;
     	    	phi = atan(z.z,z.x);
-    	    	dr =  pow( r, Power-1.0)*Power*dr + 1.0;
+    	    	dr =  pow(r, Power-1.0)*Power*dr + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;
     	    	z = pow(r,Power)*vec3(sin(theta)*cos(phi), cos(theta), sin(phi)*sin(theta)) + pos;

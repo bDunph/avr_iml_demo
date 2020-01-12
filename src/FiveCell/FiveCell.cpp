@@ -107,12 +107,22 @@ bool FiveCell::setup(std::string csd){
 
 //********* output values from csound to avr *******************//
 
-	//const char* rmsOut = "rmsOut";
-	//if(session->GetChannelPtr(m_pRmsOut, rmsOut, CSOUND_OUTPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
-	//	std::cout << "Csound output value rmsOut not available" << std::endl;
-	//	return false;
-	//}
-
+	const char* rmsOut = "rmsOut";
+	if(session->GetChannelPtr(m_pRmsOut, rmsOut, CSOUND_OUTPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "Csound output value rmsOut not available" << std::endl;
+		return false;
+	}
+	
+	for(int i = 0; i < NUM_FFT_BINS; i++)
+	{
+		fftAmpBinsOut[i] = "fftAmpBin" + std::to_string(i);
+		if(session->GetChannelPtr(m_pFftAmpBinOut[i], fftAmpBinsOut[i].c_str(), CSOUND_OUTPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+		{
+		std::cout << "Csound output value fftAmpBinsOut" << std::to_string(i) << " not available" << std::endl;
+		return false;
+		}
+	}
+	
 //**********************************************************
 
 
@@ -246,11 +256,13 @@ bool FiveCell::BSetupRaymarchQuad(GLuint shaderProg)
 	m_gliMVEPMatrixLocation = glGetUniformLocation(shaderProg, "MVEPMat");
 	m_gliInverseMVEPLocation = glGetUniformLocation(shaderProg, "InvMVEP");
 	m_gliRandomSizeLocation = glGetUniformLocation(shaderProg, "randSize");
-	//m_gliRMSModulateValLocation = glGetUniformLocation(shaderProg, "rmsModVal");
+	m_gliRMSModulateValLocation = glGetUniformLocation(shaderProg, "rmsModVal");
 	m_gliSineControlValLoc = glGetUniformLocation(shaderProg, "sineControlVal");
+	m_gliNumFftBinsLoc = glGetUniformLocation(shaderProg, "numFftBins");
 
 	m_uiglSkyboxTexLoc = glGetUniformLocation(shaderProg, "skyboxTex");
 	m_uiglGroundTexLoc = glGetUniformLocation(shaderProg, "ground.texture");
+	m_gluiFftAmpBinsLoc = glGetUniformLocation(shaderProg, "fftAmpBins");
 
 	raymarchQuadModelMatrix = glm::mat4(1.0f);
 
@@ -263,8 +275,14 @@ bool FiveCell::BSetupRaymarchQuad(GLuint shaderProg)
 void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& machineLearning, glm::vec3 controllerWorldPos){
 
 	//rms value from Csound
-	//modulateVal = *m_pRmsOut;			
+	modulateVal = *m_pRmsOut;			
 	
+	//fft frequency bin values from Csound
+	//for(int i = 0; i < NUM_FFT_BINS; i++)
+	//{
+	//	std::cout << *m_pFftAmpBinOut[i] << std::endl;	
+	//}	
+
 	//matrices for raymarch shaders
 	//modelViewEyeMat = eyeMat * viewMat * raymarchQuadModelMatrix;
 	//inverseMVEMat = glm::inverse(modelViewEyeMat);
@@ -514,7 +532,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		*randWgbowAmpVal = (MYFLT)wgbowAmpVal;
 			
 		// frequency
-		std::uniform_real_distribution<float> distWgbowFreq(1.0f, 50.0f);
+		std::uniform_real_distribution<float> distWgbowFreq(1.0f, 5000.0f);
 		std::default_random_engine genWgbowFreq(rd());
 		float wgbowFreqVal = distWgbowFreq(genWgbowFreq);
 		*randWgbowFreqVal = (MYFLT)wgbowFreqVal;
@@ -778,8 +796,10 @@ void FiveCell::draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, Raym
 	glUniform1f(m_uiglGroundPlaneShininessLoc, m_fGroundShininess);
 	
 	glUniform1f(m_gliRandomSizeLocation, sizeVal);
-	//glUniform1f(m_gliRMSModulateValLocation, modulateVal);
+	glUniform1f(m_gliRMSModulateValLocation, modulateVal);
 	glUniform1f(m_gliSineControlValLoc, sineControlVal);
+	glUniform1fv(m_gluiFftAmpBinsLoc, NUM_FFT_BINS, (float*)&m_pFftAmpBinOut); 
+	glUniform1i(m_gliNumFftBinsLoc, NUM_FFT_BINS);
 	
 	glDrawElements(GL_TRIANGLES, m_uiNumSceneIndices * sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
 

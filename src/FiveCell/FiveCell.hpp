@@ -3,6 +3,7 @@
 
 //#define NUM_RAYS 5 
 //#define MAX_MANDEL_STEPS 512 
+#define NUM_FFT_BINS 512
 
 #include <string>
 #include <vector>
@@ -71,7 +72,8 @@ private:
 	MYFLT* randWgbowAmpVal;
 	MYFLT* randWgbowPressureVal;
 	MYFLT* randWgbowPositionVal;
-	//MYFLT* m_pRmsOut;
+	MYFLT* m_pRmsOut;
+	MYFLT* m_pFftAmpBinOut[NUM_FFT_BINS];
 	MYFLT* m_cspSineControlVal;
 	//MYFLT* m_cspMandelEscapeVals[MAX_MANDEL_STEPS];
 	//MYFLT* m_cspMandelEscapeIndex;
@@ -110,6 +112,8 @@ private:
 	GLint m_gliRandomSizeLocation;
 	GLint m_gliRMSModulateValLocation;
 	GLint m_gliSineControlValLoc;
+	GLuint m_gluiFftAmpBinsLoc;
+	GLint m_gliNumFftBinsLoc;
 
 	float sizeVal;
 	float modulateVal;
@@ -168,6 +172,8 @@ private:
 
 	float m_iMaxSteps;
 
-	
+	// variables for fft analysis
+	std::string fftAmpBinsOut[NUM_FFT_BINS];	
+
 };
 #endif

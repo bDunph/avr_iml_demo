@@ -118,8 +118,8 @@ gaOut1 = (aexc + ares) * kSineControlVal
 ;gaOut1 = aexc + ares
 	;outs	gaOut1,	gaOut1
 
-;kRms	rms	gaOut1
-;	chnset	kRms,	"rmsOut"
+kRms	rms	gaOut1
+	chnset	kRms,	"rmsOut"
 
 endin
 
@@ -127,12 +127,12 @@ endin
 instr 3 ; Real-time Spectral Instrument - Mandelbulb Formula Sonification 
 ;**************************************************************************************
 
-iMandelMaxPoints	chnget	"mandelMaxPoints"
+;iMandelMaxPoints	chnget	"mandelMaxPoints"
 
 ; get sine control value from application
 ;kSineControlVal		chnget	"sineControlVal"
 
-S_EscapeValChannelNames[] init iMandelMaxPoints
+;S_EscapeValChannelNames[] init iMandelMaxPoints
 
 ifftsize = 1024 
 ioverlap = ifftsize / 4
@@ -162,29 +162,36 @@ kCount = 0
 
 loop:
 
-	S_ChannelName sprintfk	"mandelEscapeVal%d",	kCount
+	;S_ChannelName sprintfk	"mandelEscapeVal%d",	kCount
 
-	kMandelVal	chnget	S_ChannelName
+	;kMandelVal	chnget	S_ChannelName
 
 	; read frequency data from iFreqTable
-	kFreq	tablekt	kCount,	iFreqTable
+	;kFreq	tablekt	kCount,	iFreqTable
+	
+	; read amplitude data from iAmpTable
+	kAmp	tablekt	kCount,	iAmpTable
+
+	; send val out to application
+	S_ChannelName	sprintfk	"fftAmpBin%d",	kCount
+	chnset	kAmp,	S_ChannelName
 	
 	; multiply kMandelVal with frequency value 
-	kProcFreqVal = kFreq * kMandelVal
+	;kProcFreqVal = kFreq * kMandelVal
 
 	; write processed freq data back to table
-	tablewkt	kProcFreqVal,	kCount,	iFreqTable	
+	;tablewkt	kProcFreqVal,	kCount,	iFreqTable	
 
-	loop_lt	kCount,	1,	iMandelMaxPoints,	loop
+	loop_lt	kCount,	1,	inbins,	loop
 
-pvsftr	fsig,	iAmpTable,	iFreqTable
+;pvsftr	fsig,	iAmpTable,	iFreqTable
 
 contin:
 
 ; resynthesize the audio signal
-aFinalSig	pvsynth	fsig
+;aFinalSig	pvsynth	fsig
 
-gaOut2	= aFinalSig
+;gaOut2	= aFinalSig
 
 ;*********** Amplitude processing ******************
 ;ifn = giMandelTable 
@@ -240,7 +247,7 @@ i1	2	10000
 
 i2	2	10000
 
-;i3	2	10000	
+i3	2	10000	
 
 i12	2	10000
 
