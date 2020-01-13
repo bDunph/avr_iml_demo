@@ -94,7 +94,6 @@ float planeSDF(vec3 pos, vec4 normal){
 //----------------------------------------------------------------------------------------
 float mandelbulbSDF(vec3 pos) {
 
-	float fftVal = fftAmpBins[int(numFftBins * pos.z)];
 	float Power = 8.0;
     	float r = length(pos);
 	//r *= fftAmpBins[int(numFftBins * sineControlVal)];
@@ -104,8 +103,8 @@ float mandelbulbSDF(vec3 pos) {
     	    for (int i = 0; i < 5; i++) {
     	    	r = length(z);
     	    	if (r>1.5) break;
-    	    	//theta = acos((z.y/r) + (0.01 *  sineControlVal));
-    	    	theta = acos(z.y/r) * (fftVal * 100.0);
+    	    	theta = acos((z.y/r) + (0.01 *  sineControlVal));
+    	    	//theta = acos(z.y/r);
     	    	//theta = acos(z.y/r) * sineControlVal;
     	    	//phi = atan(z.z,z.x) * sineControlVal;
     	    	phi = atan(z.z,z.x);
@@ -202,11 +201,17 @@ vec2 shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, fl
 //----------------------------------------------------------------------------------------
 vec3 fog(in vec3 col, in float dist, in vec3 rayDir, in vec3 lightDir){
 
+	//float fftValX = fftAmpBins[int(numFftBins * gl_FragCoord.x)];
+	//float fftValY = fftAmpBins[int(numFftBins * gl_FragCoord.y)];
+	//float fftValZ = fftAmpBins[int(numFftBins * gl_FragCoord.z)];
+	//vec3 fftVec = vec3(fftValX, fftValY, fftValZ);
+
 	//float fogAmount = 1.0 - exp(-dist * 0.2);
 	vec3 normLightDir = normalize(-lightDir);
 	float expDistTerm = exp(dot(rayDir, normLightDir));
 	float lightAmount = max(expDistTerm * 0.6, 0.0);
 	vec3 fogColour = mix(vec3(0.5, 0.6, 0.7), vec3(1.0, 0.9, 0.7), pow(lightAmount, 10.0));
+	//fogColour *= fftVec;
 
 	vec3 bExt = vec3(0.05, 0.03, 0.09);
 	vec3 bIns = vec3(0.12, 0.05, 0.05);
