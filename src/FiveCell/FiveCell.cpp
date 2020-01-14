@@ -107,6 +107,7 @@ bool FiveCell::setup(std::string csd){
 
 //********* output values from csound to avr *******************//
 
+	m_fPrevRms = 0.0f;
 	const char* rmsOut = "rmsOut";
 	if(session->GetChannelPtr(m_pRmsOut, rmsOut, CSOUND_OUTPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
 		std::cout << "Csound output value rmsOut not available" << std::endl;
@@ -275,8 +276,12 @@ bool FiveCell::BSetupRaymarchQuad(GLuint shaderProg)
 void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& machineLearning, glm::vec3 controllerWorldPos){
 
 	//rms value from Csound
-	modulateVal = *m_pRmsOut;			
+	float avgRms = (*m_pRmsOut + m_fPrevRms) / 2;
 	
+	modulateVal = avgRms;			
+	
+	m_fPrevRms = *m_pRmsOut;
+
 	//fft frequency bin values from Csound
 	//for(int i = 0; i < NUM_FFT_BINS; i++)
 	//{
@@ -327,7 +332,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	*hrtfVals[2] = (MYFLT)rCamSpace;
 
 	//sine function
-	sineControlVal = sin(glfwGetTime() * 0.25f);
+	sineControlVal = sin(glfwGetTime() * 0.15f);
 
 	*m_cspSineControlVal = (MYFLT)sineControlVal;
 
@@ -532,7 +537,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		*randWgbowAmpVal = (MYFLT)wgbowAmpVal;
 			
 		// frequency
-		std::uniform_real_distribution<float> distWgbowFreq(1.0f, 5000.0f);
+		std::uniform_real_distribution<float> distWgbowFreq(1.0f, 10.0f);
 		std::default_random_engine genWgbowFreq(rd());
 		float wgbowFreqVal = distWgbowFreq(genWgbowFreq);
 		*randWgbowFreqVal = (MYFLT)wgbowFreqVal;

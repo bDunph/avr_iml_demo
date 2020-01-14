@@ -174,6 +174,7 @@ private:
 
 	// variables for fft analysis
 	std::string fftAmpBinsOut[NUM_FFT_BINS];	
-
+	
+	float m_fPrevRms;
 };
 #endif

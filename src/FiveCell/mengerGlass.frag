@@ -103,11 +103,11 @@ float mandelbulbSDF(vec3 pos) {
     	    for (int i = 0; i < 5; i++) {
     	    	r = length(z);
     	    	if (r>1.5) break;
-    	    	theta = acos((z.y/r) + (0.01 *  sineControlVal));
+    	    	//theta = acos((z.y/r) + (0.01 *  sineControlVal));
     	    	//theta = acos(z.y/r);
-    	    	//theta = acos(z.y/r) * sineControlVal;
-    	    	//phi = atan(z.z,z.x) * sineControlVal;
-    	    	phi = atan(z.z,z.x);
+    	    	theta = acos(z.y/r) * sineControlVal;
+    	    	phi = atan(z.z,z.x) * sineControlVal;
+    	    	//phi = atan(z.z,z.x);
     	    	dr =  pow(r, Power-1.0)*Power*dr + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;
@@ -127,7 +127,10 @@ float mandelbulbSDF(vec3 pos) {
 float sceneSDF(vec3 pos)
 {
 
-	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / randSize) * randSize;
+	float scale = (rmsModVal * 0.05) + randSize;
+	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
+	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / scale) * scale;
+	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
 
 	vec3 newPos = pos;
 	float function1x = 0.09*sin(newPos.x*0.4)*newPos.x;
