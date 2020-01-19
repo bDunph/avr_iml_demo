@@ -68,6 +68,7 @@ uniform float randSize;
 uniform float rmsModVal;
 uniform int numFftBins;
 uniform float fftAmpBins[NUM_FFT_BINS];
+uniform float timeVal;
 //uniform sampler2D groundReflectionTex;
 
 in vec4 nearPos;
@@ -79,6 +80,20 @@ layout(location = 1) out vec4 dataOut;
 
 //int resX = mod(gl_FragCoord.x, numFftBins);
 //int resY = mod(gl_FragCoord.y, numFftBins);
+
+//----------------------------------------------------------------------------------------
+// Gold Noise ¸2015 dcerisano@standard3d.com
+// - based on the Golden Ratio
+// - uniform normalized distribution
+// - fastest static noise generator funtion (also runs at low precision)
+//----------------------------------------------------------------------------------------
+
+const float PHI = 1.61803398874989484820459; // Golden Ratio
+
+float gold_noise(in vec2 xy, in float seed)
+{
+	return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
+}
 
 //----------------------------------------------------------------------------------------
 // Ground plane SDF from https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
@@ -96,6 +111,7 @@ float mandelbulbSDF(vec3 pos) {
 
 	float Power = 8.0;
     	float r = length(pos);
+	float noise = gold_noise(gl_FragCoord.xy, timeVal+1.0);
 	//r *= fftAmpBins[int(numFftBins * sineControlVal)];
     	if(r > 1.5) return r-1.2;
     	vec3 z = pos;
@@ -103,11 +119,11 @@ float mandelbulbSDF(vec3 pos) {
     	    for (int i = 0; i < 5; i++) {
     	    	r = length(z);
     	    	if (r>1.5) break;
-    	    	//theta = acos((z.y/r) + (0.01 *  sineControlVal));
+    	    	theta = acos((z.y/r)*(1.0+(noise*sineControlVal)) + (0.01 *  sineControlVal));
     	    	//theta = acos(z.y/r);
-    	    	theta = acos(z.y/r) * sineControlVal;
-    	    	phi = atan(z.z,z.x) * sineControlVal;
-    	    	//phi = atan(z.z,z.x);
+    	    	//theta = acos(z.y/r) * sineControlVal;
+    	    	//phi = atan(z.z,z.x) * sineControlVal;
+    	    	phi = atan(z.z*(1.0+(noise*sineControlVal)),z.x*(1.0+(noise*sineControlVal)));
     	    	dr =  pow(r, Power-1.0)*Power*dr + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;

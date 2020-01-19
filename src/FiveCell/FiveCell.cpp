@@ -264,6 +264,7 @@ bool FiveCell::BSetupRaymarchQuad(GLuint shaderProg)
 	m_uiglSkyboxTexLoc = glGetUniformLocation(shaderProg, "skyboxTex");
 	m_uiglGroundTexLoc = glGetUniformLocation(shaderProg, "ground.texture");
 	m_gluiFftAmpBinsLoc = glGetUniformLocation(shaderProg, "fftAmpBins");
+	m_gliTimeValLoc = glGetUniformLocation(shaderProg, "timeVal");
 
 	raymarchQuadModelMatrix = glm::mat4(1.0f);
 
@@ -805,6 +806,7 @@ void FiveCell::draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, Raym
 	glUniform1f(m_gliSineControlValLoc, sineControlVal);
 	glUniform1fv(m_gluiFftAmpBinsLoc, NUM_FFT_BINS, (float*)&m_pFftAmpBinOut); 
 	glUniform1i(m_gliNumFftBinsLoc, NUM_FFT_BINS);
+	glUniform1f(m_gliTimeValLoc, glfwGetTime());
 	
 	glDrawElements(GL_TRIANGLES, m_uiNumSceneIndices * sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
 

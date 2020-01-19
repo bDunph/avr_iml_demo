@@ -114,6 +114,7 @@ private:
 	GLint m_gliSineControlValLoc;
 	GLuint m_gluiFftAmpBinsLoc;
 	GLint m_gliNumFftBinsLoc;
+	GLint m_gliTimeValLoc;
 
 	float sizeVal;
 	float modulateVal;
