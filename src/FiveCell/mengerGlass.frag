@@ -119,11 +119,11 @@ float mandelbulbSDF(vec3 pos) {
     	    for (int i = 0; i < 5; i++) {
     	    	r = length(z);
     	    	if (r>1.5) break;
-    	    	theta = acos((z.y/r)*(1.0+(noise*sineControlVal)) + (0.01 *  sineControlVal));
-    	    	//theta = acos(z.y/r);
+    	    	//theta = acos((z.y/r) + (0.01 *  sineControlVal));
+    	    	theta = (acos(z.y/r) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
     	    	//theta = acos(z.y/r) * sineControlVal;
     	    	//phi = atan(z.z,z.x) * sineControlVal;
-    	    	phi = atan(z.z*(1.0+(noise*sineControlVal)),z.x*(1.0+(noise*sineControlVal)));
+    	    	phi = (atan(z.z,z.x) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
     	    	dr =  pow(r, Power-1.0)*Power*dr + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;

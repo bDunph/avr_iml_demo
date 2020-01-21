@@ -207,6 +207,20 @@ contin:
 endin
 
 ;**************************************************************************************
+instr 4 ; Granular Synthesis instrument using granule and soundfile
+;**************************************************************************************
+k1      linseg 0,0.5,1,(p3-p2-1),1,0.5,0
+gaOut3      granule p4*k1,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,\
+        p16,p17,p18,p19,p20,p21,p22,p23,p24
+gaOut4      granule p4*k1,p5,p6,p7,p8,p9,p10,p11,p12,p13,p14,p15,\
+        p16,p17,p18,p19, p20+0.17,p21,p22,p23,p24
+
+
+outs gaOut3,gaOut4
+
+endin
+
+;**************************************************************************************
 instr 12 ; Hrtf Instrument
 ;**************************************************************************************
 kPortTime linseg 0.0, 0.001, 0.05 
@@ -217,7 +231,11 @@ kDistanceVal chnget "distance"
 kDist portk kDistanceVal, kPortTime ;to filter out audio artifacts due to the distance changing too quickly
 
 ;asig	sum	gaOut0,	gaOut1
-asig = gaOut1
+asig	sum	gaOut3,	gaOut4
+;asig = gaOut1
+
+kRmsGran	rms	asig	
+	chnset	kRmsGran,	"rmsOut"
 
 aLeftSig, aRightSig  hrtfmove2	asig, kAzimuthVal, kElevationVal, "hrtf-48000-left.dat", "hrtf-48000-right.dat", 4, 9.0, 48000
 aLeftSig = aLeftSig / (kDist + 0.00001)
@@ -235,9 +253,12 @@ endin
 ;********************************************************************
 ; f tables
 ;********************************************************************
-;p1	p2	p3	p4	p5	p6	p7	p8	p9	p10	p11	p12	p13	p14	p15	p16	p17	p18	p19	p20	p21	p22	p23	p24	p25
+;p1	p2	p3	p4	p5		p6	p7	p8	p9	p10	p11	p12	p13	p14	p15	p16	p17	p18	p19	p20	p21	p22	p23	p24	p25
 
-f1	0	1025	8	0	2	1	3	0	4	1	6	0	10	1	12	0	16	1	32	0	1	0	939	0
+f1	0	1025	8	0		2	1	3	0	4	1	6	0	10	1	12	0	16	1	32	0	1	0	939	0
+
+f2      0 	262144 	1 	"24cellRow.wav" 0 	0 	0
+
 ;********************************************************************
 ; score events
 ;********************************************************************
@@ -245,9 +266,11 @@ f1	0	1025	8	0	2	1	3	0	4	1	6	0	10	1	12	0	16	1	32	0	1	0	939	0
 
 i1	2	10000
 
-i2	2	10000
+;i2	2	10000
 
-i3	2	10000	
+;i3	2	10000	
+
+i4      0 	10000 	2000 	16 		0.5 	0 	0 	1 	4 	0 	0.005 	5 	0.01 	50 	0.04 	50 	30 	30 	0.39 	1 	1.42 	0.29 	2
 
 i12	2	10000
 
