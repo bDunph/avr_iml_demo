@@ -18,6 +18,7 @@ nchnls = 2
 0dbfs = 1
 
 giWave  ftgen  0,0,2^10,10,1,1/2,1/4,1/8,1/16,1/32,1/64
+;giWave	ftgen	0,0,16384,10,1
 
 ;;**************************************************************************************
 ;instr 1 ; Real-time Spectral Instrument - Environmental Noise 
@@ -230,12 +231,14 @@ instr 5 ;grain generating instrument 1
 ;**************************************************************************************
   kRate         =         p4 
   kTrig         metro      kRate      ; a trigger to generate grains
-  kDur          =		0.02 
-  kForm         =         400 
+  kDur          =		p5 
+  kForm         =         p6 
   ;note delay time (p2) is defined using a random function -
   ;- beginning with no randomization but then gradually increasing
-  kDelayRange   transeg    0,1,0,0,  (p3/100)-1,4,0.03
-  kDelay        gauss      kDelayRange
+;  kDelayRange   transeg    0,1,0,0,  (p3/100)-1,4,0.03
+
+kRandom		random	0.0, 0.03
+  kDelay        gauss      kRandom
   ;                                  p1 p2 p3   p4
                 schedkwhen kTrig,0,0,7, abs(kDelay), kDur,kForm ;trigger a note (grain) in instr 3
 endin
@@ -245,12 +248,13 @@ instr 6 ;grain generating instrument 2
 ;**************************************************************************************
   kRate          =        p4 
   kTrig          metro      kRate      ; a trigger to generate grains
-  kDur           =         0.02 
+  kDur           =         p5 
   ;formant frequency (p4) is multiplied by a random function -
   ;- beginning with no randomization but then gradually increasing
-  kForm          =         400 
-  kFormOSRange  transeg     0,1,0,0, 11,2,12 ;range defined in semitones
-  kFormOS       gauss       kFormOSRange
+  kForm          =         p6 
+  ;kFormOSRange  transeg     0,1,0,0,p3/1000,2,12 ;range defined in semitones
+  kRandom	random	0, 12
+  kFormOS       gauss    kRandom 
   ;                                   p1 p2 p3   p4
                 schedkwhen  kTrig,0,0,7, 0, kDur,kForm*semitone(kFormOS)
 endin
@@ -259,9 +263,9 @@ endin
 instr 7 ;grain sounding instrument
 ;**************************************************************************************
   iForm =     p4 
-  aEnv  linseg  0,0.005,0.2,0.7,0.2,0.005,0
+  aEnv  linseg  0,0.005,0.2,p3-0.01,0.2,0.005,0
   gaOut7 poscil  aEnv, iForm, giWave
-        outs     gaOut7, gaOut7 
+  ;      outs     aOut7, aOut7
 endin
 
 ;**************************************************************************************
@@ -279,8 +283,8 @@ kDist portk kDistanceVal, kPortTime ;to filter out audio artifacts due to the di
 asig = gaOut7
 ;asig = asig * 0.5
 
-kRmsGran	rms	asig	
-	chnset	kRmsGran,	"rmsOut"
+;kRmsGran	rms	asig	
+;	chnset	kRmsGran,	"rmsOut"
 
 aLeftSig, aRightSig  hrtfmove2	asig, kAzimuthVal, kElevationVal, "hrtf-48000-left.dat", "hrtf-48000-right.dat", 4, 9.0, 48000
 aLeftSig = aLeftSig / (kDist + 0.00001)
@@ -316,11 +320,11 @@ endin
 
 ;i4      2 	10000 	0.2 	16 			0.5 	0 	0 	2 	4 	0 	0.005 	5 	0.01 	50 	0.04 	50 	30 	30 	0.39 	1 	1.42 	0.29 	2
 
-;i5  	2    	10000	200
+i5  	2    	10000	200	0.02			400
 
-i6  	2 	10000	200 
+;i6  	2 	10000	200	0.02			400 
 
-;i12	2	10000
+i12	2	10000
 e
 </CsScore>
 </CsoundSynthesizer>
