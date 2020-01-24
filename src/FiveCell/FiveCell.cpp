@@ -581,15 +581,15 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		*m_cspRandPhase = (MYFLT)valRandPhase;
 
 		// grain duration (kgdur)
-		std::uniform_real_distribution<float> distGrainDur(0.001f, 0.2f);
+		std::uniform_real_distribution<float> distGrainDur(0.01f, 0.2f);
 		std::default_random_engine genGrainDur(rd());
 		float valGrainDur = distGrainDur(genGrainDur);
 		*m_cspGrainDur = (MYFLT)valGrainDur;
 
 		// grain density (kdens)
-		std::uniform_real_distribution<int> distGrainDensity(50, 1000);
+		std::uniform_real_distribution<float> distGrainDensity(50.0f, 500.0f);
 		std::default_random_engine genGrainDensity(rd());
-		int valGrainDensity = distGrainDensity(genGrainDensity);
+		float valGrainDensity = floor(distGrainDensity(genGrainDensity));
 		*m_cspGrainDensity = (MYFLT)valGrainDensity;
 
 		// distribution of random grain frequency variation (kfrpow)
@@ -605,9 +605,9 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		*m_cspGrainPhaseVariationDistrib = (MYFLT)valGrainPhaseVariationDistrib;
 
 		// grain waveform (kfn)
-		std::uniform_real_distribution<int> distGrainWaveform(1, 4);
+		std::uniform_real_distribution<float> distGrainWaveform(1.0f, 4.0f);
 		std::default_random_engine genGrainWaveform(rd());
-		int valGrainWaveform = distGrainWaveform(genGrainWaveform);
+		float valGrainWaveform = floor(distGrainWaveform(genGrainWaveform));
 		*m_cspGrainWaveform = (MYFLT)valGrainWaveform;
 		
 		//random visual params
@@ -696,12 +696,12 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		*m_cspRandPhase = (MYFLT)modelOut[3];
 
 		if(modelOut[4] > 0.2f) modelOut[4] = 0.2f;
-		if(modelOut[4] < 0.001f) modelOut[4] = 0.001f;
+		if(modelOut[4] < 0.01f) modelOut[4] = 0.01f;
 		*m_cspGrainDur = (MYFLT)modelOut[4];
 
-		if(modelOut[5] > 1000) modelOut[5] = 1000;
-		if(modelOut[5] < 50) modelOut[5] = 50;
-		*m_cspGrainDensity = (MYFLT)modelOut[5];
+		if(modelOut[5] > 500.0f) modelOut[5] = 500.0f;
+		if(modelOut[5] < 50.0f) modelOut[5] = 50.0f;
+		*m_cspGrainDensity = (MYFLT)floor(modelOut[5]);
 	
 		if(modelOut[6] > 1.0f) modelOut[6] = 1.0f;
 		if(modelOut[6] < -1.0f) modelOut[6] = -1.0f;
@@ -711,9 +711,9 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		if(modelOut[7] < -1.0f) modelOut[7] = -1.0f;
 		*m_cspGrainPhaseVariationDistrib = (MYFLT)modelOut[7];
 
-		if(modelOut[8] > 4) modelOut[8] = 4;
-		if(modelOut[8] < 1) modelOut[8] = 1;
-		*m_cspGrainWaveform = (MYFLT)modelOut[8];
+		if(modelOut[8] > 4.0f) modelOut[8] = 4.0f;
+		if(modelOut[8] < 1.0f) modelOut[8] = 1.0f;
+		*m_cspGrainWaveform = (MYFLT)floor(modelOut[8]);
 
 		if(modelOut[9] > 0.8f) modelOut[9] = 0.8f;
 		if(modelOut[9] < 0.1f) modelOut[9] = 0.1f;
@@ -740,7 +740,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		modelIn.push_back((double)controllerWorldPos.z);
 
 		modelOut = staticRegression.run(modelIn);
-
+		
 		if(modelOut[0] > 1000.0f) modelOut[0] = 1000.0f;
 		if(modelOut[0] < 50.0f) modelOut[0] = 50.0f;
 		*m_cspGrainFreq = (MYFLT)modelOut[0];
@@ -758,12 +758,12 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		*m_cspRandPhase = (MYFLT)modelOut[3];
 
 		if(modelOut[4] > 0.2f) modelOut[4] = 0.2f;
-		if(modelOut[4] < 0.001f) modelOut[4] = 0.001f;
+		if(modelOut[4] < 0.01f) modelOut[4] = 0.01f;
 		*m_cspGrainDur = (MYFLT)modelOut[4];
 
-		if(modelOut[5] > 1000) modelOut[5] = 1000;
-		if(modelOut[5] < 50) modelOut[5] = 50;
-		*m_cspGrainDensity = (MYFLT)modelOut[5];
+		if(modelOut[5] > 500.0f) modelOut[5] = 500.0f;
+		if(modelOut[5] < 50.0f) modelOut[5] = 50.0f;
+		*m_cspGrainDensity = (MYFLT)floor(modelOut[5]);
 	
 		if(modelOut[6] > 1.0f) modelOut[6] = 1.0f;
 		if(modelOut[6] < -1.0f) modelOut[6] = -1.0f;
@@ -773,14 +773,14 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		if(modelOut[7] < -1.0f) modelOut[7] = -1.0f;
 		*m_cspGrainPhaseVariationDistrib = (MYFLT)modelOut[7];
 
-		if(modelOut[8] > 4) modelOut[8] = 4;
-		if(modelOut[8] < 1) modelOut[8] = 1;
-		*m_cspGrainWaveform = (MYFLT)modelOut[8];
+		if(modelOut[8] > 4.0f) modelOut[8] = 4.0f;
+		if(modelOut[8] < 1.0f) modelOut[8] = 1.0f;
+		*m_cspGrainWaveform = (MYFLT)floor(modelOut[8]);
 
 		if(modelOut[9] > 0.8f) modelOut[9] = 0.8f;
 		if(modelOut[9] < 0.1f) modelOut[9] = 0.1f;
 		sizeVal = (float)modelOut[9];
-						
+
 		bool prevRunMsgState = m_bCurrentRunMsgState;
 		if(m_bRunMsg != prevRunMsgState && m_bRunMsg == true)
 		{

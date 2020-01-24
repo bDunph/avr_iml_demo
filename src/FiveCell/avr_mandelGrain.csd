@@ -224,7 +224,7 @@ kPhs	chnget	"grainPhase"
 kFmd	chnget	"randFreq"
 kPmd	chnget	"randPhase"
 kGDur	chnget	"grainDur"
-;kDens	chnget	"grainDensity"
+kDens	chnget	"grainDensity"
 kFrPow	chnget	"grainFreqVariationDistrib"
 kPrPow	chnget	"grainPhaseVariationDistrib"
 ;kFn	chnget	"grainWaveform"
@@ -236,11 +236,12 @@ kPrPow	chnget	"grainPhaseVariationDistrib"
   ;kPmd    transeg 0,1,0,0, 10,4,1,  10,-4,0
   ;kPmd	= 7
   ;kGDur   =       0.08
-  kDens   =       200
+  ;kDens   =       200
   iMaxOvr =       1000
-  kFn     =       2
+  kFn     =       3
   ;print info. to the terminal
-          printks "Random Phase:%5.2F%TPitch Random:%5.2F%n",1,kPmd,kFmd
+          ;printks "Random Phase:%5.2F%TPitch Random:%5.2F%n",1,kPmd,kFmd
+	printks "Grain Function:%f%n", 1, kFn
   gaOut8    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrPow, kPrPow
 ;          outs     aSig*0.06,aSig*0.06
 endin
