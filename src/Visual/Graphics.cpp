@@ -178,7 +178,7 @@ bool Graphics::BInitGL(bool fullscreen)
 		std::cout << "mengerShaderProg returned NULL: Graphics::BInitGL" << std::endl;
 		return false;
 	}
-	std::string csdFileName = "avrImlMandelBulbDemo.csd";
+	std::string csdFileName = "avr_mandelGrain.csd";
 	if(!fiveCell.setup(csdFileName)) {
 		std::cout << "fiveCell setup failed: Graphics BInitGL" << std::endl;
 		return false;

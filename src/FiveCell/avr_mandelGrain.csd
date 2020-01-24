@@ -17,16 +17,16 @@ nchnls = 2
 ; Set 0dbfs to 1
 0dbfs = 1
 
-giWave  ftgen  0,0,2^10,10,1,1/2,1/4,1/8,1/16,1/32,1/64
+giWave  ftgen  3,0,2^10,10,1,1/2,1/4,1/8,1/16,1/32,1/64
 giBuzz  ftgen 1,0,4096,11,40,1,0.9
 giSine	ftgen 2,0,4096,10,1
-giWave	ftgen	0,0,16384,10,1
+giWave	ftgen	4,0,16384,10,1
 
 ;window function - used as an amplitude envelope for each grain
 ;(bartlett window)
 giWFn   ftgen 2,0,16384,20,3,1
 
-;;**************************************************************************************
+;**************************************************************************************
 instr 1 ; Real-time Spectral Instrument - Environmental Noise 
 ;**************************************************************************************
 
@@ -59,7 +59,7 @@ kdepth = 0.99 + (0.01 * kSineControlVal)
 fmask	pvsmaska	fsig,	ifn,	kdepth		
 
 aOut0	pvsynth	fmask
-	outs	aOut0 * 0.8,	aOut0 * 0.8
+	outs	aOut0 * 0.6,	aOut0 * 0.6
 
 endin
 
@@ -218,19 +218,30 @@ endin
 ;**************************************************************************************
 instr 8 ; granular instrument using grain3
 ;**************************************************************************************
-  kCPS    =       400
-  kPhs    =       0
+
+kCps	chnget	"grainFreq"
+kPhs	chnget	"grainPhase"
+kFmd	chnget	"randFreq"
+kPmd	chnget	"randPhase"
+kGDur	chnget	"grainDur"
+;kDens	chnget	"grainDensity"
+kFrPow	chnget	"grainFreqVariationDistrib"
+kPrPow	chnget	"grainPhaseVariationDistrib"
+;kFn	chnget	"grainWaveform"
+
+  ;kCPS    =       100
+  ;kPhs    =       0
   ;kFmd    transeg 0,1,0,0, 10,4,15, 10,-4,0
-  kFmd	= 3
+  ;kFmd	= 3
   ;kPmd    transeg 0,1,0,0, 10,4,1,  10,-4,0
-  kPmd	= 7
-  kGDur   =       0.08
+  ;kPmd	= 7
+  ;kGDur   =       0.08
   kDens   =       200
   iMaxOvr =       1000
   kFn     =       2
   ;print info. to the terminal
           printks "Random Phase:%5.2F%TPitch Random:%5.2F%n",1,kPmd,kFmd
-  gaOut8    grain3  kCPS, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, 0, 0
+  gaOut8    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrPow, kPrPow
 ;          outs     aSig*0.06,aSig*0.06
 endin
 
@@ -276,15 +287,15 @@ f1	0	1025	8	0			2	1	3	0	4	1	6	0	10	1	12	0	16	1	32	0	1	0	939	0
 ; score events
 ;********************************************************************
 
-i1	2	10000
+;i1	2	10000
 
 ;i2	2	10000
 
 ;i3	2	10000	
 
-;i8	2	10000
+i8	2	10000
 
-;i12	2	10000
+i12	2	10000
 e
 </CsScore>
 </CsoundSynthesizer>

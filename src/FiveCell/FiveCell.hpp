@@ -68,16 +68,24 @@ private:
 	//Csound
 	CsoundSession *session;
 	MYFLT* hrtfVals[3];
-	MYFLT* randWgbowFreqVal;
-	MYFLT* randWgbowAmpVal;
-	MYFLT* randWgbowPressureVal;
-	MYFLT* randWgbowPositionVal;
 	MYFLT* m_pRmsOut;
 	MYFLT* m_pFftAmpBinOut[NUM_FFT_BINS];
 	MYFLT* m_cspSineControlVal;
 	//MYFLT* m_cspMandelEscapeVals[MAX_MANDEL_STEPS];
 	//MYFLT* m_cspMandelEscapeIndex;
 	//MYFLT* m_cspMaxSteps;
+
+	// params for grain3
+	MYFLT* m_cspGrainFreq;
+	MYFLT* m_cspGrainPhase;
+	MYFLT* m_cspRandFreq;
+	MYFLT* m_cspRandPhase;
+	MYFLT* m_cspGrainDur;
+	MYFLT* m_cspGrainDensity;
+	MYFLT* m_cspGrainFreqVariationDistrib;
+	MYFLT* m_cspGrainPhaseVariationDistrib;
+	MYFLT* m_cspGrainWaveform;
+
 
 	//raymarching quad
 	unsigned int m_uiNumSceneVerts;

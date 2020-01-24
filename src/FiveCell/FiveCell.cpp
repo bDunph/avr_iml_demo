@@ -61,24 +61,49 @@ bool FiveCell::setup(std::string csd){
 		std::cout << "GetChannelPtr could not get the distance input" << std::endl;
 		return false;
 	}
-	const char* randFreq = "randFreq";
-	if(session->GetChannelPtr(randWgbowFreqVal, randFreq, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
-		std::cout << "GetChannelPtr could not get the randFreq value" << std::endl;
+	const char* grainFreq = "grainFreq";
+	if(session->GetChannelPtr(m_cspGrainFreq, grainFreq, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the grainFreq value" << std::endl;
 		return false;
 	} 
-	const char* randAmp = "randAmp";
-	if(session->GetChannelPtr(randWgbowAmpVal, randAmp, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	const char* grainPhase = "grainPhse";
+	if(session->GetChannelPtr(m_cspGrainPhase, grainPhase, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
 		std::cout << "GetChannelPtr could not get the randAmp value" << std::endl;
 		return false;
 	}
-	const char* randPressure = "randPressure";
-	if(session->GetChannelPtr(randWgbowPressureVal, randPressure, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
-		std::cout << "GetChannelPtr could not get the randPressure value" << std::endl;
+	const char* randFreq = "randFreq";
+	if(session->GetChannelPtr(m_cspRandFreq, randFreq, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the randFreq value" << std::endl;
 		return false;
 	}
-	const char* randPos = "randPos";
-	if(session->GetChannelPtr(randWgbowPositionVal, randPos, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
-		std::cout << "GetChannelPtr could not get the randPos value" << std::endl;
+	const char* randPhase = "randPhase";
+	if(session->GetChannelPtr(m_cspRandPhase, randPhase, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the randPhase value" << std::endl;
+		return false;
+	}
+	const char* grainDur = "grainDur";
+	if(session->GetChannelPtr(m_cspGrainDur, grainDur, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the grainDur value" << std::endl;
+		return false;
+	}
+	const char* grainDensity = "grainDensity";
+	if(session->GetChannelPtr(m_cspGrainDensity, grainDensity, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the grainDensity value" << std::endl;
+		return false;
+	}
+	const char* grainFreqVariationDistrib = "grainFreqVariationDistrib";
+	if(session->GetChannelPtr(m_cspGrainFreqVariationDistrib, grainFreqVariationDistrib, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the grainFreqVariationDistrib value" << std::endl;
+		return false;
+	}
+	const char* grainPhaseVariationDistrib = "grainPhaseVariationDistrib";
+	if(session->GetChannelPtr(m_cspGrainPhaseVariationDistrib, grainPhaseVariationDistrib, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the grainPhaseVariationDistrib value" << std::endl;
+		return false;
+	}
+	const char* grainWaveform = "grainWaveform";
+	if(session->GetChannelPtr(m_cspGrainWaveform, grainWaveform, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+		std::cout << "GetChannelPtr could not get the grainWaveform value" << std::endl;
 		return false;
 	}
 	const char* sineVal = "sineControlVal";
@@ -529,32 +554,62 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 		//random audio params
 		
-		// wgbow parameters
+		// grain3 parameters
 
-		// amplitude
-		std::uniform_real_distribution<float> distWgbowAmp(0.9f, 1.0f);
-		std::default_random_engine genWgbowAmp(rd());
-		float wgbowAmpVal = distWgbowAmp(genWgbowAmp);
-		*randWgbowAmpVal = (MYFLT)wgbowAmpVal;
+		// grain frequency (kcps) 
+		std::uniform_real_distribution<float> distGrainFreq(50.0f, 1000.0f);
+		std::default_random_engine genGrainFreq(rd());
+		float valGrainFreq = distGrainFreq(genGrainFreq);
+		*m_cspGrainFreq = (MYFLT)valGrainFreq;
 			
-		// frequency
-		std::uniform_real_distribution<float> distWgbowFreq(1.0f, 10.0f);
-		std::default_random_engine genWgbowFreq(rd());
-		float wgbowFreqVal = distWgbowFreq(genWgbowFreq);
-		*randWgbowFreqVal = (MYFLT)wgbowFreqVal;
+		// grain phase (kphs) 
+		std::uniform_real_distribution<float> distGrainPhase(0.0f, 1.0f);
+		std::default_random_engine genGrainPhase(rd());
+		float valGrainPhase = distGrainPhase(genGrainPhase);
+		*m_cspGrainPhase = (MYFLT)valGrainPhase;
 
-		// bow pressure
-		std::uniform_real_distribution<float> distWgbowPressure(3.0f, 5.0f);
-		std::default_random_engine genWgbowPressure(rd());
-		float wgbowPressureVal = distWgbowPressure(genWgbowPressure);
-		*randWgbowPressureVal = (MYFLT)wgbowPressureVal;	
+		// random variation in grain frequency (kfmd) 
+		std::uniform_real_distribution<float> distRandFreq(1.0f, 500.0f);
+		std::default_random_engine genRandFreq(rd());
+		float valRandFreq = distRandFreq(genRandFreq);
+		*m_cspRandFreq = (MYFLT)valRandFreq;	
 
-		// bow position
-		std::uniform_real_distribution<float> distWgbowPosition(0.025f, 0.23f);
-		std::default_random_engine genWgbowPosition(rd());
-		float wgbowPositionVal = distWgbowPosition(genWgbowPosition);
-		*randWgbowPositionVal = (MYFLT)wgbowPositionVal;
+		// random variation in phase (kpmd) 
+		std::uniform_real_distribution<float> distRandPhase(0.0f, 1.0f);
+		std::default_random_engine genRandPhase(rd());
+		float valRandPhase = distRandPhase(genRandPhase);
+		*m_cspRandPhase = (MYFLT)valRandPhase;
 
+		// grain duration (kgdur)
+		std::uniform_real_distribution<float> distGrainDur(0.001f, 0.2f);
+		std::default_random_engine genGrainDur(rd());
+		float valGrainDur = distGrainDur(genGrainDur);
+		*m_cspGrainDur = (MYFLT)valGrainDur;
+
+		// grain density (kdens)
+		std::uniform_real_distribution<int> distGrainDensity(50, 1000);
+		std::default_random_engine genGrainDensity(rd());
+		int valGrainDensity = distGrainDensity(genGrainDensity);
+		*m_cspGrainDensity = (MYFLT)valGrainDensity;
+
+		// distribution of random grain frequency variation (kfrpow)
+		std::uniform_real_distribution<float> distGrainFreqVariationDistrib(-1.0f, 1.0f);
+		std::default_random_engine genGrainFreqVariationDistrib(rd());
+		float valGrainFreqVariationDistrib = distGrainFreqVariationDistrib(genGrainFreqVariationDistrib);
+		*m_cspGrainFreqVariationDistrib = (MYFLT)valGrainFreqVariationDistrib;
+
+		// distribution of random grain phase variation (kprpow)
+		std::uniform_real_distribution<float> distGrainPhaseVariationDistrib(-1.0f, 1.0f);
+		std::default_random_engine genGrainPhaseVariationDistrib(rd());
+		float valGrainPhaseVariationDistrib = distGrainPhaseVariationDistrib(genGrainPhaseVariationDistrib);
+		*m_cspGrainPhaseVariationDistrib = (MYFLT)valGrainPhaseVariationDistrib;
+
+		// grain waveform (kfn)
+		std::uniform_real_distribution<int> distGrainWaveform(1, 4);
+		std::default_random_engine genGrainWaveform(rd());
+		int valGrainWaveform = distGrainWaveform(genGrainWaveform);
+		*m_cspGrainWaveform = (MYFLT)valGrainWaveform;
+		
 		//random visual params
 		std::uniform_real_distribution<float> distribution2(0.1f, 0.8f);
 		std::default_random_engine generator2 (rd());
@@ -569,11 +624,16 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		inputData.push_back((double)controllerWorldPos.y);	
 		inputData.push_back((double)controllerWorldPos.z);	
 
-		outputData.push_back((double)*randWgbowAmpVal);
-		outputData.push_back((double)*randWgbowFreqVal);
-		outputData.push_back((double)*randWgbowPressureVal);
-		outputData.push_back((double)*randWgbowPositionVal);
-		outputData.push_back((double)sizeVal);
+		outputData.push_back((double)*m_cspGrainFreq); //0
+		outputData.push_back((double)*m_cspGrainPhase); //1
+		outputData.push_back((double)*m_cspRandFreq); //2
+		outputData.push_back((double)*m_cspRandPhase); //3
+		outputData.push_back((double)*m_cspGrainDur); //4
+		outputData.push_back((double)*m_cspGrainDensity); //5
+		outputData.push_back((double)*m_cspGrainFreqVariationDistrib); //6
+		outputData.push_back((double)*m_cspGrainPhaseVariationDistrib); //7
+		outputData.push_back((double)*m_cspGrainWaveform); //8
+		outputData.push_back((double)sizeVal); //9
 
 #ifdef __APPLE__
 		trainingData.recordSingleElement(inputData, outputData);	
@@ -619,25 +679,45 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 		modelOut = staticRegression.run(modelIn);
 
-		if(modelOut[0] > 1.0f) modelOut[0] = 1.0f;
-		if(modelOut[0] < 0.9f) modelOut[0] = 0.9f;
-		*randWgbowAmpVal = (MYFLT)modelOut[0];
+		if(modelOut[0] > 1000.0f) modelOut[0] = 1000.0f;
+		if(modelOut[0] < 50.0f) modelOut[0] = 50.0f;
+		*m_cspGrainFreq = (MYFLT)modelOut[0];
 
-		if(modelOut[1] > 10000.0f) modelOut[0] = 10000.0f;
-		if(modelOut[1] < 55.0f) modelOut[0] = 55.0f;
-		*randWgbowFreqVal = (MYFLT)modelOut[1];
+		if(modelOut[1] > 1.0f) modelOut[1] = 1.0f;
+		if(modelOut[1] < 0.0f) modelOut[1] = 0.0f;
+		*m_cspGrainPhase = (MYFLT)modelOut[1];
 
-		if(modelOut[2] > 5.0f) modelOut[2] = 5.0f;
+		if(modelOut[2] > 500.0f) modelOut[2] = 500.0f;
 		if(modelOut[2] < 1.0f) modelOut[2] = 1.0f;
-		*randWgbowPressureVal = (MYFLT)modelOut[2];
+		*m_cspRandFreq = (MYFLT)modelOut[2];
 
-		if(modelOut[3] > 0.23f) modelOut[3] = 0.23f;
-		if(modelOut[3] < 0.025f) modelOut[3] = 0.025f;
-		*randWgbowPositionVal = (MYFLT)modelOut[3];
+		if(modelOut[3] > 1.0f) modelOut[3] = 1.0f;
+		if(modelOut[3] < 0.0f) modelOut[3] = 0.0f;
+		*m_cspRandPhase = (MYFLT)modelOut[3];
 
-		if(modelOut[4] > 0.8f) modelOut[4] = 0.8f;
-		if(modelOut[4] < 0.1f) modelOut[4] = 0.1f;
-		sizeVal = (float)modelOut[4];
+		if(modelOut[4] > 0.2f) modelOut[4] = 0.2f;
+		if(modelOut[4] < 0.001f) modelOut[4] = 0.001f;
+		*m_cspGrainDur = (MYFLT)modelOut[4];
+
+		if(modelOut[5] > 1000) modelOut[5] = 1000;
+		if(modelOut[5] < 50) modelOut[5] = 50;
+		*m_cspGrainDensity = (MYFLT)modelOut[5];
+	
+		if(modelOut[6] > 1.0f) modelOut[6] = 1.0f;
+		if(modelOut[6] < -1.0f) modelOut[6] = -1.0f;
+		*m_cspGrainFreqVariationDistrib = (MYFLT)modelOut[6];
+
+		if(modelOut[7] > 1.0f) modelOut[7] = 1.0f;
+		if(modelOut[7] < -1.0f) modelOut[7] = -1.0f;
+		*m_cspGrainPhaseVariationDistrib = (MYFLT)modelOut[7];
+
+		if(modelOut[8] > 4) modelOut[8] = 4;
+		if(modelOut[8] < 1) modelOut[8] = 1;
+		*m_cspGrainWaveform = (MYFLT)modelOut[8];
+
+		if(modelOut[9] > 0.8f) modelOut[9] = 0.8f;
+		if(modelOut[9] < 0.1f) modelOut[9] = 0.1f;
+		sizeVal = (float)modelOut[9];
  
 		std::cout << "Model Running" << std::endl;
 		modelIn.clear();
@@ -661,26 +741,46 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 		modelOut = staticRegression.run(modelIn);
 
-		if(modelOut[0] > 1.0f) modelOut[0] = 1.0f;
-		if(modelOut[0] < 0.9f) modelOut[0] = 0.9f;
-		*randWgbowAmpVal = (MYFLT)modelOut[0];
+		if(modelOut[0] > 1000.0f) modelOut[0] = 1000.0f;
+		if(modelOut[0] < 50.0f) modelOut[0] = 50.0f;
+		*m_cspGrainFreq = (MYFLT)modelOut[0];
 
-		if(modelOut[1] > 10000.0f) modelOut[0] = 10000.0f;
-		if(modelOut[1] < 55.0f) modelOut[0] = 55.0f;
-		*randWgbowFreqVal = (MYFLT)modelOut[1];
+		if(modelOut[1] > 1.0f) modelOut[1] = 1.0f;
+		if(modelOut[1] < 0.0f) modelOut[1] = 0.0f;
+		*m_cspGrainPhase = (MYFLT)modelOut[1];
 
-		if(modelOut[2] > 5.0f) modelOut[2] = 5.0f;
+		if(modelOut[2] > 500.0f) modelOut[2] = 500.0f;
 		if(modelOut[2] < 1.0f) modelOut[2] = 1.0f;
-		*randWgbowPressureVal = (MYFLT)modelOut[2];
-		
-		if(modelOut[3] > 0.23f) modelOut[3] = 0.23f;
-		if(modelOut[3] < 0.025f) modelOut[3] = 0.025f;
-		*randWgbowPositionVal = (MYFLT)modelOut[3];
+		*m_cspRandFreq = (MYFLT)modelOut[2];
 
-		if(modelOut[4] > 0.8f) modelOut[4] = 0.8f;
-		if(modelOut[4] < 0.1f) modelOut[4] = 0.1f;
-		sizeVal = (float)modelOut[4];
-				
+		if(modelOut[3] > 1.0f) modelOut[3] = 1.0f;
+		if(modelOut[3] < 0.0f) modelOut[3] = 0.0f;
+		*m_cspRandPhase = (MYFLT)modelOut[3];
+
+		if(modelOut[4] > 0.2f) modelOut[4] = 0.2f;
+		if(modelOut[4] < 0.001f) modelOut[4] = 0.001f;
+		*m_cspGrainDur = (MYFLT)modelOut[4];
+
+		if(modelOut[5] > 1000) modelOut[5] = 1000;
+		if(modelOut[5] < 50) modelOut[5] = 50;
+		*m_cspGrainDensity = (MYFLT)modelOut[5];
+	
+		if(modelOut[6] > 1.0f) modelOut[6] = 1.0f;
+		if(modelOut[6] < -1.0f) modelOut[6] = -1.0f;
+		*m_cspGrainFreqVariationDistrib = (MYFLT)modelOut[6];
+
+		if(modelOut[7] > 1.0f) modelOut[7] = 1.0f;
+		if(modelOut[7] < -1.0f) modelOut[7] = -1.0f;
+		*m_cspGrainPhaseVariationDistrib = (MYFLT)modelOut[7];
+
+		if(modelOut[8] > 4) modelOut[8] = 4;
+		if(modelOut[8] < 1) modelOut[8] = 1;
+		*m_cspGrainWaveform = (MYFLT)modelOut[8];
+
+		if(modelOut[9] > 0.8f) modelOut[9] = 0.8f;
+		if(modelOut[9] < 0.1f) modelOut[9] = 0.1f;
+		sizeVal = (float)modelOut[9];
+						
 		bool prevRunMsgState = m_bCurrentRunMsgState;
 		if(m_bRunMsg != prevRunMsgState && m_bRunMsg == true)
 		{
