@@ -26,11 +26,17 @@
 #define _countof(x) (sizeof(x)/sizeof((x)[0]))
 #endif
 
-bool FiveCell::setup(std::string csd){
+bool FiveCell::setup(std::string csd)
+{
 
 //************************************************************
 //Csound performance thread
 //************************************************************
+
+	// bool to indicate first loop through update and draw functions to 
+	// set initial paramaters
+	m_bFirstLoop = true;
+
 	std::string csdName = "";
 	if(!csd.empty()) csdName = csd;
 	session = new CsoundSession(csdName);
@@ -45,74 +51,98 @@ bool FiveCell::setup(std::string csd){
 
 	std::string val1 = "azimuth";
 	const char* azimuth = val1.c_str();	
-	if(session->GetChannelPtr(hrtfVals[0], azimuth, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(hrtfVals[0], azimuth, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the azimuth input" << std::endl;
 		return false;
 	}
+
 	std::string val2 = "elevation";
 	const char* elevation = val2.c_str();
-	if(session->GetChannelPtr(hrtfVals[1], elevation, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(hrtfVals[1], elevation, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the elevation input" << std::endl;
 		return false;
 	}	
+
 	std::string val3 = "distance";
 	const char* distance = val3.c_str();
-	if(session->GetChannelPtr(hrtfVals[2], distance, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(hrtfVals[2], distance, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the distance input" << std::endl;
 		return false;
 	}
+
 	const char* grainFreq = "grainFreq";
-	if(session->GetChannelPtr(m_cspGrainFreq, grainFreq, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspGrainFreq, grainFreq, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the grainFreq value" << std::endl;
 		return false;
 	} 
+
 	const char* grainPhase = "grainPhse";
-	if(session->GetChannelPtr(m_cspGrainPhase, grainPhase, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspGrainPhase, grainPhase, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the randAmp value" << std::endl;
 		return false;
 	}
+
 	const char* randFreq = "randFreq";
-	if(session->GetChannelPtr(m_cspRandFreq, randFreq, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspRandFreq, randFreq, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the randFreq value" << std::endl;
 		return false;
 	}
+
 	const char* randPhase = "randPhase";
-	if(session->GetChannelPtr(m_cspRandPhase, randPhase, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspRandPhase, randPhase, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the randPhase value" << std::endl;
 		return false;
 	}
+
 	const char* grainDur = "grainDur";
-	if(session->GetChannelPtr(m_cspGrainDur, grainDur, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspGrainDur, grainDur, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the grainDur value" << std::endl;
 		return false;
 	}
+
 	const char* grainDensity = "grainDensity";
-	if(session->GetChannelPtr(m_cspGrainDensity, grainDensity, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspGrainDensity, grainDensity, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the grainDensity value" << std::endl;
 		return false;
 	}
+
 	const char* grainFreqVariationDistrib = "grainFreqVariationDistrib";
-	if(session->GetChannelPtr(m_cspGrainFreqVariationDistrib, grainFreqVariationDistrib, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspGrainFreqVariationDistrib, grainFreqVariationDistrib, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the grainFreqVariationDistrib value" << std::endl;
 		return false;
 	}
+
 	const char* grainPhaseVariationDistrib = "grainPhaseVariationDistrib";
-	if(session->GetChannelPtr(m_cspGrainPhaseVariationDistrib, grainPhaseVariationDistrib, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspGrainPhaseVariationDistrib, grainPhaseVariationDistrib, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the grainPhaseVariationDistrib value" << std::endl;
 		return false;
 	}
+
 	const char* grainWaveform = "grainWaveform";
-	if(session->GetChannelPtr(m_cspGrainWaveform, grainWaveform, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspGrainWaveform, grainWaveform, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the grainWaveform value" << std::endl;
 		return false;
 	}
+
 	const char* sineVal = "sineControlVal";
-	if(session->GetChannelPtr(m_cspSineControlVal, sineVal, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_cspSineControlVal, sineVal, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "GetChannelPtr could not get the sineControlVal value" << std::endl;
 		return false;
 	}
 
-	
 	//for(int i = 0; i < MAX_MANDEL_STEPS; i++){
 
 	//	std::string mandelEscapeValString = "mandelEscapeVal" + std::to_string(i);
@@ -134,7 +164,8 @@ bool FiveCell::setup(std::string csd){
 
 	m_fPrevRms = 0.0f;
 	const char* rmsOut = "rmsOut";
-	if(session->GetChannelPtr(m_pRmsOut, rmsOut, CSOUND_OUTPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0){
+	if(session->GetChannelPtr(m_pRmsOut, rmsOut, CSOUND_OUTPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
 		std::cout << "Csound output value rmsOut not available" << std::endl;
 		return false;
 	}
@@ -584,7 +615,14 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		std::uniform_real_distribution<float> distGrainDur(0.01f, 0.2f);
 		std::default_random_engine genGrainDur(rd());
 		float valGrainDur = distGrainDur(genGrainDur);
-		*m_cspGrainDur = (MYFLT)valGrainDur;
+		if(m_bFirstLoop) 
+		{	
+			*m_cspGrainDur = (MYFLT)0.08f;
+		} 
+		else
+		{
+			*m_cspGrainDur = (MYFLT)valGrainDur;
+		}
 
 		// grain density (kdens)
 		std::uniform_real_distribution<float> distGrainDensity(50.0f, 500.0f);
@@ -916,6 +954,10 @@ void FiveCell::draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, Raym
 	glBindTexture(GL_TEXTURE_2D, 0);
 	glActiveTexture(GL_TEXTURE0 + 0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	// update first loop switch
+	m_bFirstLoop = false;
+
 }
 
 

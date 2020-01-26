@@ -223,8 +223,8 @@ kCps	chnget	"grainFreq"
 kPhs	chnget	"grainPhase"
 kFmd	chnget	"randFreq"
 kPmd	chnget	"randPhase"
-kGDur	chnget	"grainDur"
-kDens	chnget	"grainDensity"
+;kGDur	chnget	"grainDur"
+;kDens	chnget	"grainDensity"
 kFrPow	chnget	"grainFreqVariationDistrib"
 kPrPow	chnget	"grainPhaseVariationDistrib"
 ;kFn	chnget	"grainWaveform"
@@ -235,8 +235,8 @@ kPrPow	chnget	"grainPhaseVariationDistrib"
   ;kFmd	= 3
   ;kPmd    transeg 0,1,0,0, 10,4,1,  10,-4,0
   ;kPmd	= 7
-  ;kGDur   =       0.08
-  ;kDens   =       200
+  kGDur   =       0.08
+  kDens   =       200
   iMaxOvr =       1000
   kFn     =       3
   ;print info. to the terminal
@@ -288,7 +288,7 @@ f1	0	1025	8	0			2	1	3	0	4	1	6	0	10	1	12	0	16	1	32	0	1	0	939	0
 ; score events
 ;********************************************************************
 
-;i1	2	10000
+i1	2	10000
 
 ;i2	2	10000
 

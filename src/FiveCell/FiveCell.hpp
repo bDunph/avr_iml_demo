@@ -185,5 +185,7 @@ private:
 	std::string fftAmpBinsOut[NUM_FFT_BINS];	
 	
 	float m_fPrevRms;
+
+	bool m_bFirstLoop; 
 };
 #endif
