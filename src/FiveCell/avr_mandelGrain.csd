@@ -59,7 +59,7 @@ kdepth = 0.99 + (0.01 * kSineControlVal)
 fmask	pvsmaska	fsig,	ifn,	kdepth		
 
 aOut0	pvsynth	fmask
-	outs	aOut0 * 0.6,	aOut0 * 0.6
+	outs	aOut0 * 0.8,	aOut0 * 0.8
 
 endin
 
@@ -223,11 +223,18 @@ kCps	chnget	"grainFreq"
 kPhs	chnget	"grainPhase"
 kFmd	chnget	"randFreq"
 kPmd	chnget	"randPhase"
-;kGDur	chnget	"grainDur"
-;kDens	chnget	"grainDensity"
+kGDur	chnget	"grainDur"
+kDens	chnget	"grainDensity"
 kFrPow	chnget	"grainFreqVariationDistrib"
 kPrPow	chnget	"grainPhaseVariationDistrib"
 ;kFn	chnget	"grainWaveform"
+
+kGDur = 0.01 + kGDur ; initialisation to avoid perf error 0.0
+kDens = 1 + kDens
+
+; get control value from application
+kSineControlVal	chnget	"sineControlVal"
+;kCps = kCps * kSineControlVal + 20
 
   ;kCPS    =       100
   ;kPhs    =       0
@@ -235,15 +242,78 @@ kPrPow	chnget	"grainPhaseVariationDistrib"
   ;kFmd	= 3
   ;kPmd    transeg 0,1,0,0, 10,4,1,  10,-4,0
   ;kPmd	= 7
-  kGDur   =       0.08
-  kDens   =       200
+  ;kGDur   =       0.08
+  ;kDens   =       200
   iMaxOvr =       1000
-  kFn     =       3
+  kFn     =       4
   ;print info. to the terminal
           ;printks "Random Phase:%5.2F%TPitch Random:%5.2F%n",1,kPmd,kFmd
-	printks "Grain Function:%f%n", 1, kFn
+	;printks "Grain Density:%f%n", 1, kDens
   gaOut8    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrPow, kPrPow
 ;          outs     aSig*0.06,aSig*0.06
+
+;kRms	rms	gaOut8
+;	chnset	kRms,	"rmsOut"
+
+;ifftsize = 2048
+;ioverlap = ifftsize / 4
+;iwinsize = ifftsize * 2
+;iwinshape = 0
+;
+;fsig	pvsanal	gaOut8,	ifftsize,	ioverlap,	iwinsize,	iwinshape
+;
+;kcent	pvscent	fsig
+;	chnset	kcent,	"specCentOut"
+
+;printks "Specral Centroid CSound Out:%f%n", 1, kcent
+
+
+
+endin
+
+;**************************************************************************************
+instr 9 ; Real-time Spectral Analysis Instrument 
+;**************************************************************************************
+
+ifftsize = 1024 
+ioverlap = ifftsize / 4
+iwinsize = ifftsize * 2
+iwinshape = 0
+
+; route output from instrument 2 above to pvsanal
+fsig	pvsanal	gaOut8,	ifftsize,	ioverlap,	iwinsize,	iwinshape
+
+; get info from pvsanal and print
+ioverlap,	inbins,	iwindowsize,	iformat	pvsinfo	fsig
+print	ioverlap,	inbins,	iwindowsize,	iformat		
+
+; create tables to write frequency data
+iFreqTable	ftgen	0,	0,	inbins,	2,	0
+iAmpTable	ftgen	0,	0,	inbins,	2,	0
+
+; write frequency data to function table
+kFlag	pvsftw	fsig,	iAmpTable,	iFreqTable	
+
+ if kFlag == 0 goto contin 
+
+;************** Frequency Processing *****************
+
+; modify frequency data from fsig with mandelbulb escape values from application
+kCount = 0
+
+loop:
+
+	; read amplitude data from iAmpTable
+	kAmp	tablekt	kCount,	iAmpTable
+
+	; send val out to application
+	S_ChannelName	sprintfk	"fftAmpBin%d",	kCount
+	chnset	kAmp,	S_ChannelName
+	
+	loop_lt	kCount,	1,	inbins,	loop
+
+contin:
+
 endin
 
 ;**************************************************************************************
@@ -295,6 +365,8 @@ i1	2	10000
 ;i3	2	10000	
 
 i8	2	10000
+
+i9	2	10000
 
 i12	2	10000
 e

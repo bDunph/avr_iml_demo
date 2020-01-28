@@ -66,7 +66,10 @@ uniform float sineControlVal;
 uniform samplerCube skyboxTex;
 uniform float randSize;
 uniform float rmsModVal;
+uniform float specCentVal;
 uniform int numFftBins;
+uniform float highFreqVal;
+uniform float lowFreqVal;
 uniform float fftAmpBins[NUM_FFT_BINS];
 uniform float timeVal;
 //uniform sampler2D groundReflectionTex;
@@ -95,6 +98,8 @@ float gold_noise(in vec2 xy, in float seed)
 	return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
 }
 
+float noise = gold_noise(gl_FragCoord.xy * timeVal, timeVal+1.0);
+
 //----------------------------------------------------------------------------------------
 // Ground plane SDF from https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
 //----------------------------------------------------------------------------------------
@@ -111,7 +116,6 @@ float mandelbulbSDF(vec3 pos) {
 
 	float Power = 8.0;
     	float r = length(pos);
-	float noise = gold_noise(gl_FragCoord.xy, timeVal+1.0);
 	//r *= fftAmpBins[int(numFftBins * sineControlVal)];
     	if(r > 1.5) return r-1.2;
     	vec3 z = pos;
@@ -121,10 +125,10 @@ float mandelbulbSDF(vec3 pos) {
     	    	if (r>1.5) break;
     	    	//theta = acos((z.y/r) + (0.01 *  sineControlVal));
     	    	//theta = (acos(z.y/r) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
-    	    	theta = acos(z.y/r) * sineControlVal;
-    	    	phi = atan(z.z,z.x) * sineControlVal;
+    	    	theta = acos(z.y/r);// * sin(timeVal);
+     	    	phi = atan(z.z,z.x);// * cos(timeVal);
     	    	//phi = (atan(z.z,z.x) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
-    	    	dr =  pow(r, Power-1.0)*Power*dr + 1.0;
+    	    	dr =  pow(r, Power-1.0)*Power*dr*(lowFreqVal*100.0) + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;
     	    	z = pow(r,Power)*vec3(sin(theta)*cos(phi), cos(theta), sin(phi)*sin(theta)) + pos;
@@ -143,7 +147,7 @@ float mandelbulbSDF(vec3 pos) {
 float sceneSDF(vec3 pos)
 {
 
-	float scale = (rmsModVal * 0.05) + randSize;
+	float scale = randSize + (noise * 0.001);
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
 	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / scale) * scale;
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));

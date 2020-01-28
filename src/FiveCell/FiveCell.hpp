@@ -69,6 +69,7 @@ private:
 	CsoundSession *session;
 	MYFLT* hrtfVals[3];
 	MYFLT* m_pRmsOut;
+	MYFLT* m_cspSpecCentOut;
 	MYFLT* m_pFftAmpBinOut[NUM_FFT_BINS];
 	MYFLT* m_cspSineControlVal;
 	//MYFLT* m_cspMandelEscapeVals[MAX_MANDEL_STEPS];
@@ -119,6 +120,9 @@ private:
 	GLint m_gliInverseMVEPLocation;
 	GLint m_gliRandomSizeLocation;
 	GLint m_gliRMSModulateValLocation;
+	GLint m_gliSpecCentOutLoc;
+	GLint m_gliHighFreqAvgLoc;
+	GLint m_gliLowFreqAvgLoc;
 	GLint m_gliSineControlValLoc;
 	GLuint m_gluiFftAmpBinsLoc;
 	GLint m_gliNumFftBinsLoc;
@@ -187,5 +191,9 @@ private:
 	float m_fPrevRms;
 
 	bool m_bFirstLoop; 
+
+	double m_dLowFreqAvg;
+	double m_dHighFreqAvg;
+
 };
 #endif

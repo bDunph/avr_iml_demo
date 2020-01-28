@@ -180,6 +180,12 @@ bool FiveCell::setup(std::string csd)
 		}
 	}
 	
+	const char* specCentOut = "specCentOut";
+	if(session->GetChannelPtr(m_cspSpecCentOut, specCentOut, CSOUND_OUTPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	{
+		std::cout << "Csound output value specCentOut not available" << std::endl;
+		return false;
+	}
 //**********************************************************
 
 
@@ -314,6 +320,9 @@ bool FiveCell::BSetupRaymarchQuad(GLuint shaderProg)
 	m_gliInverseMVEPLocation = glGetUniformLocation(shaderProg, "InvMVEP");
 	m_gliRandomSizeLocation = glGetUniformLocation(shaderProg, "randSize");
 	m_gliRMSModulateValLocation = glGetUniformLocation(shaderProg, "rmsModVal");
+	m_gliSpecCentOutLoc = glGetUniformLocation(shaderProg, "specCentVal");
+	m_gliHighFreqAvgLoc = glGetUniformLocation(shaderProg, "highFreqVal");
+	m_gliLowFreqAvgLoc = glGetUniformLocation(shaderProg, "lowFreqVal");
 	m_gliSineControlValLoc = glGetUniformLocation(shaderProg, "sineControlVal");
 	m_gliNumFftBinsLoc = glGetUniformLocation(shaderProg, "numFftBins");
 
@@ -339,11 +348,30 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	
 	m_fPrevRms = *m_pRmsOut;
 
+	// spectral centroid value from csound
+	std::cout << "Spectral Centroid Value : " << *m_cspSpecCentOut << std::endl; 
+
+	double lowFreqVals = 0.0f;
+	double highFreqVals = 0.0f;
 	//fft frequency bin values from Csound
-	//for(int i = 0; i < NUM_FFT_BINS; i++)
-	//{
-	//	std::cout << *m_pFftAmpBinOut[i] << std::endl;	
-	//}	
+	for(int i = 0; i < NUM_FFT_BINS; i++)
+	{
+		//std::cout << *m_pFftAmpBinOut[i] << std::endl;	
+		if(i < 342 && i > 0)
+		{
+			lowFreqVals += *m_pFftAmpBinOut[i];
+		}
+		else if(i < NUM_FFT_BINS && i >= 342)
+		{
+			highFreqVals += *m_pFftAmpBinOut[i];
+		}
+	}	
+
+	m_dLowFreqAvg = lowFreqVals / 341;
+	m_dHighFreqAvg = highFreqVals / 171;	
+
+	std::cout << "Average amplitudes in low bins: " << m_dLowFreqAvg << std::endl;
+	std::cout << "Average amplitudes in high bins: " << m_dHighFreqAvg << std::endl;
 
 	//matrices for raymarch shaders
 	//modelViewEyeMat = eyeMat * viewMat * raymarchQuadModelMatrix;
@@ -941,6 +969,9 @@ void FiveCell::draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, Raym
 	
 	glUniform1f(m_gliRandomSizeLocation, sizeVal);
 	glUniform1f(m_gliRMSModulateValLocation, modulateVal);
+	glUniform1f(m_gliSpecCentOutLoc, *m_cspSpecCentOut);
+	glUniform1f(m_gliHighFreqAvgLoc, m_dHighFreqAvg);
+	glUniform1f(m_gliLowFreqAvgLoc, m_dLowFreqAvg);
 	glUniform1f(m_gliSineControlValLoc, sineControlVal);
 	glUniform1fv(m_gluiFftAmpBinsLoc, NUM_FFT_BINS, (float*)&m_pFftAmpBinOut); 
 	glUniform1i(m_gliNumFftBinsLoc, NUM_FFT_BINS);
