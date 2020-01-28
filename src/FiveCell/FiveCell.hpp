@@ -7,6 +7,7 @@
 
 #include <string>
 #include <vector>
+#include <glm/gtc/quaternion.hpp>
 
 #ifdef __APPLE__
 #include "rapidmix.h"
@@ -42,7 +43,7 @@ public:
 
 	bool setup(std::string csd);
 	bool BSetupRaymarchQuad(GLuint shaderProg);
-	void update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& machineLearning, glm::vec3 controllerWorldPos_0, glm::vec3 controllerWorldPos_1);
+	void update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& machineLearning, glm::vec3 controllerWorldPos_0, glm::vec3 controllerWorldPos_1, glm::quat controllerQuat_0, glm::quat controllerQuat_1);
 	void draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, RaymarchData& raymarchData, GLuint mengerProg);
 	void exit();
 

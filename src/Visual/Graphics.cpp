@@ -878,7 +878,7 @@ void Graphics::UpdateSceneData(std::unique_ptr<VR_Manager>& vrm){
 	//if(!m_bPBOFirstFrame) TransferDataToCPU();	
 
 	//update variables for fiveCell
-	fiveCell.update(m_mat4CurrentViewMatrix, cameraPosition, machineLearning, m_vec3ControllerWorldPos[0], m_vec3ControllerWorldPos[1]);
+	fiveCell.update(m_mat4CurrentViewMatrix, cameraPosition, machineLearning, m_vec3ControllerWorldPos[0], m_vec3ControllerWorldPos[1], m_quatController[0], m_quatController[1]);
 
 	//std::cout << shaderData.size() << std::endl;
 	// write shaderData to file each frame to see output
@@ -1320,6 +1320,9 @@ void Graphics::RenderScene(vr::Hmd_Eye nEye, std::unique_ptr<VR_Manager>& vrm)
 			vrm->m_rHand[i].m_pRenderModel->Draw();
 			glm::mat4 matModelViewController = vrm->GetCurrentViewMatrix() * matDeviceToTracking;
 			m_vec3ControllerWorldPos[i] = glm::vec3(matModelViewController[3][0], matModelViewController[3][1], matModelViewController[3][2]); 	
+
+			// convert controller modelView matrix to quaternion
+			m_quatController[i] = glm::quat_cast(matModelViewController);	
 		}
 
 		glUseProgram(0);

@@ -3,6 +3,8 @@
 
 #include <memory>
 #include <string>
+#include <glm/gtc/quaternion.hpp>
+//#include <glm/gtx/quaternion.hpp>
 //#include <ctime>
 
 #include "FiveCell.hpp"
@@ -219,6 +221,7 @@ private:
 	GLuint m_gluiDummyTexture;
 
 	glm::vec3 m_vec3ControllerWorldPos[2];
+	glm::quat m_quatController[2];
 };
 
 
