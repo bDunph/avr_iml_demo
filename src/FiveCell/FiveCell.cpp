@@ -319,6 +319,7 @@ bool FiveCell::BSetupRaymarchQuad(GLuint shaderProg)
 	m_gliMVEPMatrixLocation = glGetUniformLocation(shaderProg, "MVEPMat");
 	m_gliInverseMVEPLocation = glGetUniformLocation(shaderProg, "InvMVEP");
 	m_gliRandomSizeLocation = glGetUniformLocation(shaderProg, "randSize");
+	m_gliValBinScaleLoc = glGetUniformLocation(shaderProg, "fftBinValScale");
 	m_gliRMSModulateValLocation = glGetUniformLocation(shaderProg, "rmsModVal");
 	m_gliSpecCentOutLoc = glGetUniformLocation(shaderProg, "specCentVal");
 	m_gliHighFreqAvgLoc = glGetUniformLocation(shaderProg, "highFreqVal");
@@ -677,9 +678,16 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		*m_cspGrainWaveform = (MYFLT)valGrainWaveform;
 		
 		//random visual params
+
+		// size
 		std::uniform_real_distribution<float> distribution2(0.1f, 0.8f);
 		std::default_random_engine generator2 (rd());
 		sizeVal = distribution2(generator2);
+
+		// lowFreqVal scaling amount
+		std::uniform_real_distribution<float> distBinScale(2.0f, 100.0f);
+		std::default_random_engine genBinScale(rd());
+		valBinScale = distBinScale(genBinScale);
 	}
 	m_bPrevRandomState = machineLearning.bRandomParams;
 
@@ -700,6 +708,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		outputData.push_back((double)*m_cspGrainPhaseVariationDistrib); //7
 		outputData.push_back((double)*m_cspGrainWaveform); //8
 		outputData.push_back((double)sizeVal); //9
+		outputData.push_back((double)valBinScale); //10
 
 #ifdef __APPLE__
 		trainingData.recordSingleElement(inputData, outputData);	
@@ -785,6 +794,10 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		if(modelOut[9] < 0.1f) modelOut[9] = 0.1f;
 		sizeVal = (float)modelOut[9];
  
+		if(modelOut[10] > 100.0f) modelOut[10] = 100.0f;
+		if(modelOut[10] < 2.0f) modelOut[10] = 2.0f;
+		valBinScale = (float)modelOut[10];
+
 		std::cout << "Model Running" << std::endl;
 		modelIn.clear();
 		modelOut.clear();
@@ -846,6 +859,10 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		if(modelOut[9] > 0.8f) modelOut[9] = 0.8f;
 		if(modelOut[9] < 0.1f) modelOut[9] = 0.1f;
 		sizeVal = (float)modelOut[9];
+		
+		if(modelOut[10] > 100.0f) modelOut[10] = 100.0f;
+		if(modelOut[10] < 2.0f) modelOut[10] = 2.0f;
+		valBinScale = (float)modelOut[10];
 
 		bool prevRunMsgState = m_bCurrentRunMsgState;
 		if(m_bRunMsg != prevRunMsgState && m_bRunMsg == true)
@@ -976,6 +993,7 @@ void FiveCell::draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, Raym
 	glUniform1fv(m_gluiFftAmpBinsLoc, NUM_FFT_BINS, (float*)&m_pFftAmpBinOut); 
 	glUniform1i(m_gliNumFftBinsLoc, NUM_FFT_BINS);
 	glUniform1f(m_gliTimeValLoc, glfwGetTime()*.025f);
+	glUniform1f(m_gliValBinScaleLoc, valBinScale);
 	
 	glDrawElements(GL_TRIANGLES, m_uiNumSceneIndices * sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
 
