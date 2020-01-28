@@ -218,7 +218,7 @@ private:
 
 	GLuint m_gluiDummyTexture;
 
-	glm::vec3 m_vec4ControllerWorldPos[2];
+	glm::vec3 m_vec3ControllerWorldPos[2];
 };
 
 

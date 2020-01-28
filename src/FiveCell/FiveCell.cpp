@@ -342,7 +342,7 @@ bool FiveCell::BSetupRaymarchQuad(GLuint shaderProg)
 //*******************************************************************************************
 // Update Stuff Here
 //*******************************************************************************************
-void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& machineLearning, glm::vec3 controllerWorldPos){
+void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& machineLearning, glm::vec3 controllerWorldPos_0, glm::vec3 controllerWorldPos_1){
 
 	//rms value from Csound
 	float avgRms = (*m_pRmsOut + m_fPrevRms) / 2;
@@ -706,9 +706,12 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	// record training examples
 	if(machineLearning.bRecord)
 	{
-		inputData.push_back((double)controllerWorldPos.x);	
-		inputData.push_back((double)controllerWorldPos.y);	
-		inputData.push_back((double)controllerWorldPos.z);	
+		inputData.push_back((double)controllerWorldPos_0.x); //0	
+		inputData.push_back((double)controllerWorldPos_0.y); //1	
+		inputData.push_back((double)controllerWorldPos_0.z); //2	
+		inputData.push_back((double)controllerWorldPos_1.x); //3
+		inputData.push_back((double)controllerWorldPos_1.y); //4
+		inputData.push_back((double)controllerWorldPos_1.z); //5
 
 		outputData.push_back((double)*m_cspGrainFreq); //0
 		outputData.push_back((double)*m_cspGrainPhase); //1
@@ -762,9 +765,12 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		std::vector<double> modelOut;
 		std::vector<double> modelIn;
 
-		modelIn.push_back((double)controllerWorldPos.x);
-		modelIn.push_back((double)controllerWorldPos.y);
-		modelIn.push_back((double)controllerWorldPos.z);
+		modelIn.push_back((double)controllerWorldPos_0.x); //0
+		modelIn.push_back((double)controllerWorldPos_0.y); //1
+		modelIn.push_back((double)controllerWorldPos_0.z); //2
+		modelIn.push_back((double)controllerWorldPos_1.x); //3
+		modelIn.push_back((double)controllerWorldPos_1.y); //4
+		modelIn.push_back((double)controllerWorldPos_1.z); //5
 
 		modelOut = staticRegression.run(modelIn);
 
@@ -836,9 +842,12 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		std::vector<double> modelOut;
 		std::vector<double> modelIn;
 
-		modelIn.push_back((double)controllerWorldPos.x);
-		modelIn.push_back((double)controllerWorldPos.y);
-		modelIn.push_back((double)controllerWorldPos.z);
+		modelIn.push_back((double)controllerWorldPos_0.x); //0
+		modelIn.push_back((double)controllerWorldPos_0.y); //1
+		modelIn.push_back((double)controllerWorldPos_0.z); //2
+		modelIn.push_back((double)controllerWorldPos_1.x); //3
+		modelIn.push_back((double)controllerWorldPos_1.y); //4
+		modelIn.push_back((double)controllerWorldPos_1.z); //5
 
 		modelOut = staticRegression.run(modelIn);
 		

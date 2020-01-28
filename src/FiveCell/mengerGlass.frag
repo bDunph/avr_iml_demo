@@ -151,7 +151,7 @@ float sceneSDF(vec3 pos)
 
 	float scale = randSize + (noise * 0.001);
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
-	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / scale) * scale;
+	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / scale) * scale;
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
 
 	vec3 newPos = pos;

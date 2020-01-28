@@ -267,8 +267,6 @@ kSineControlVal	chnget	"sineControlVal"
 
 ;printks "Specral Centroid CSound Out:%f%n", 1, kcent
 
-
-
 endin
 
 ;**************************************************************************************
@@ -328,7 +326,7 @@ kDist portk kDistanceVal, kPortTime ;to filter out audio artifacts due to the di
 
 ;asig	sum	gaOut0,	gaOut1
 ;asig	sum	gaOut3,	gaOut4
-asig = gaOut8
+asig = gaOut8 * 0.5
 ;asig = asig * 0.5
 
 ;kRmsGran	rms	asig	
