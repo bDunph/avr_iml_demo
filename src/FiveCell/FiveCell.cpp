@@ -326,6 +326,8 @@ bool FiveCell::BSetupRaymarchQuad(GLuint shaderProg)
 	m_gliLowFreqAvgLoc = glGetUniformLocation(shaderProg, "lowFreqVal");
 	m_gliSineControlValLoc = glGetUniformLocation(shaderProg, "sineControlVal");
 	m_gliNumFftBinsLoc = glGetUniformLocation(shaderProg, "numFftBins");
+	m_gliThetaAngleLoc = glGetUniformLocation(shaderProg, "thetaScale");
+	m_gliPhiAngleLoc = glGetUniformLocation(shaderProg, "phiScale");
 
 	m_uiglSkyboxTexLoc = glGetUniformLocation(shaderProg, "skyboxTex");
 	m_uiglGroundTexLoc = glGetUniformLocation(shaderProg, "ground.texture");
@@ -688,6 +690,16 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		std::uniform_real_distribution<float> distBinScale(2.0f, 100.0f);
 		std::default_random_engine genBinScale(rd());
 		valBinScale = distBinScale(genBinScale);
+
+		// theta angle scaling amount
+		std::uniform_real_distribution<float> distTheta(0.1f, 1.0f);
+		std::default_random_engine genTheta(rd());
+		valThetaScale = distTheta(genTheta);
+
+		// phi angle scaling amount
+		std::uniform_real_distribution<float> distPhi(0.1f, 1.0f);
+		std::default_random_engine genPhi(rd());
+		valPhiScale = distPhi(genPhi);	
 	}
 	m_bPrevRandomState = machineLearning.bRandomParams;
 
@@ -709,6 +721,8 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		outputData.push_back((double)*m_cspGrainWaveform); //8
 		outputData.push_back((double)sizeVal); //9
 		outputData.push_back((double)valBinScale); //10
+		outputData.push_back((double)valThetaScale); //11
+		outputData.push_back((double)valPhiScale); //12
 
 #ifdef __APPLE__
 		trainingData.recordSingleElement(inputData, outputData);	
@@ -798,6 +812,14 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		if(modelOut[10] < 2.0f) modelOut[10] = 2.0f;
 		valBinScale = (float)modelOut[10];
 
+		if(modelOut[11] > 1.0f) modelOut[11] = 1.0f;
+		if(modelOut[11] < 0.1f) modelOut[11] = 0.1f;
+		valThetaScale = (float)modelOut[11];
+
+		if(modelOut[12] > 1.0f) modelOut[12] = 1.0f;
+		if(modelOut[12] < 0.1f) modelOut[12] = 0.1f;
+		valPhiScale = (float)modelOut[12];
+
 		std::cout << "Model Running" << std::endl;
 		modelIn.clear();
 		modelOut.clear();
@@ -863,6 +885,14 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		if(modelOut[10] > 100.0f) modelOut[10] = 100.0f;
 		if(modelOut[10] < 2.0f) modelOut[10] = 2.0f;
 		valBinScale = (float)modelOut[10];
+		
+		if(modelOut[11] > 1.0f) modelOut[11] = 1.0f;
+		if(modelOut[11] < 0.1f) modelOut[11] = 0.1f;
+		valThetaScale = (float)modelOut[11];
+
+		if(modelOut[12] > 1.0f) modelOut[12] = 1.0f;
+		if(modelOut[12] < 0.1f) modelOut[12] = 0.1f;
+		valPhiScale = (float)modelOut[12];
 
 		bool prevRunMsgState = m_bCurrentRunMsgState;
 		if(m_bRunMsg != prevRunMsgState && m_bRunMsg == true)
@@ -994,6 +1024,8 @@ void FiveCell::draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, Raym
 	glUniform1i(m_gliNumFftBinsLoc, NUM_FFT_BINS);
 	glUniform1f(m_gliTimeValLoc, glfwGetTime()*.025f);
 	glUniform1f(m_gliValBinScaleLoc, valBinScale);
+	glUniform1f(m_gliThetaAngleLoc, valThetaScale);
+	glUniform1f(m_gliPhiAngleLoc, valPhiScale);
 	
 	glDrawElements(GL_TRIANGLES, m_uiNumSceneIndices * sizeof(unsigned int), GL_UNSIGNED_INT, (void*)0);
 

@@ -73,7 +73,8 @@ uniform float lowFreqVal;
 uniform float fftAmpBins[NUM_FFT_BINS];
 uniform float timeVal;
 uniform float fftBinValScale;
-//uniform sampler2D groundReflectionTex;
+uniform float phiScale;
+uniform float thetaScale;
 
 in vec4 nearPos;
 in vec4 farPos;
@@ -126,8 +127,8 @@ float mandelbulbSDF(vec3 pos) {
     	    	if (r>1.5) break;
     	    	//theta = acos((z.y/r) + (0.01 *  sineControlVal));
     	    	//theta = (acos(z.y/r) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
-    	    	theta = acos(z.y/r);// * sin(timeVal);
-     	    	phi = atan(z.z,z.x);// * cos(timeVal);
+    	    	theta = acos(z.y/r) * thetaScale;// * sin(timeVal);
+     	    	phi = atan(z.z,z.x) * phiScale;// * cos(timeVal);
     	    	//phi = (atan(z.z,z.x) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
     	    	dr =  pow(r, Power-1.0)*Power*dr*(lowFreqVal*fftBinValScale) + 1.0;
     	    	theta *= Power;

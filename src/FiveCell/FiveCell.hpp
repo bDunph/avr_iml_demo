@@ -128,10 +128,14 @@ private:
 	GLint m_gliNumFftBinsLoc;
 	GLint m_gliTimeValLoc;
 	GLint m_gliValBinScaleLoc;
+	GLint m_gliThetaAngleLoc;
+	GLint m_gliPhiAngleLoc;
 
 	float sizeVal;
 	float modulateVal;
 	float valBinScale;
+	float valThetaScale;
+	float valPhiScale;
 
 	glm::mat4 raymarchQuadModelMatrix;
 	glm::mat4 modelViewEyeMat;
