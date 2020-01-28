@@ -352,7 +352,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	m_fPrevRms = *m_pRmsOut;
 
 	// spectral centroid value from csound
-	std::cout << "Spectral Centroid Value : " << *m_cspSpecCentOut << std::endl; 
+	//std::cout << "Spectral Centroid Value : " << *m_cspSpecCentOut << std::endl; 
 
 	double lowFreqVals = 0.0f;
 	double highFreqVals = 0.0f;
@@ -373,8 +373,8 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	m_dLowFreqAvg = lowFreqVals / 341;
 	m_dHighFreqAvg = highFreqVals / 171;	
 
-	std::cout << "Average amplitudes in low bins: " << m_dLowFreqAvg << std::endl;
-	std::cout << "Average amplitudes in high bins: " << m_dHighFreqAvg << std::endl;
+	//std::cout << "Average amplitudes in low bins: " << m_dLowFreqAvg << std::endl;
+	//std::cout << "Average amplitudes in high bins: " << m_dHighFreqAvg << std::endl;
 
 	//matrices for raymarch shaders
 	//modelViewEyeMat = eyeMat * viewMat * raymarchQuadModelMatrix;
@@ -849,7 +849,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	} 
 	else if(!machineLearning.bRunModel && machineLearning.bHaltModel != currentHaltState)
 	{
-		machineLearning.bRunModel = false;
+
 		std::cout << "Model Stopped" << std::endl;
 	}
 	m_bPrevHaltState = machineLearning.bHaltModel;

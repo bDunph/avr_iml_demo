@@ -100,7 +100,7 @@ float gold_noise(in vec2 xy, in float seed)
 	return fract(tan(distance(xy*PHI, xy)*seed)*xy.x);
 }
 
-float noise = gold_noise(gl_FragCoord.xy * timeVal, timeVal+1.0);
+//float noise = gold_noise(gl_FragCoord.xy * timeVal, timeVal+1.0);
 
 //----------------------------------------------------------------------------------------
 // Ground plane SDF from https://www.iquilezles.org/www/articles/distfunctions/distfunctions.htm
@@ -149,7 +149,7 @@ float mandelbulbSDF(vec3 pos) {
 float sceneSDF(vec3 pos)
 {
 
-	float scale = randSize + (noise * 0.001);
+	float scale = randSize;// + (noise * 0.001);
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
 	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / scale) * scale;
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
