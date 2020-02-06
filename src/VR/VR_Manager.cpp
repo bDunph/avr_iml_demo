@@ -77,7 +77,7 @@ bool VR_Manager::BInit(){
 	std::string manifestPath = "/Users/bryandunphy/Projects/5CellAVR/src/VR/avr_iml_actions.json";
 	vr::VRInput()->SetActionManifestPath(manifestPath.c_str()); 
 #elif _WIN32
-	vr::VRInput()->SetActionManifestPath( Path_MakeAbsolute( "../../src/VR/avr_iml_actions.json", Path_StripFilename( Path_GetExecutablePath() ) ).c_str() );
+	vr::VRInput()->SetActionManifestPath( Path_MakeAbsolute( "avr_iml_actions.json", Path_StripFilename( Path_GetExecutablePath() ) ).c_str() );
 #endif
 	
 	//generic actions
