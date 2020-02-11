@@ -14,7 +14,7 @@
 #define OBJECT_ABSORB_COLOUR_2 vec3(0.3, 9.0, 9.0)
 
 #define NUM_FFT_BINS 512
-#
+
 struct Moonlight {
 	vec3 direction;
 	vec3 colour;
