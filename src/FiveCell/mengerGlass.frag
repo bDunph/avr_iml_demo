@@ -131,6 +131,7 @@ float mandelbulbSDF(vec3 pos) {
      	    	phi = atan(z.z,z.x) * phiScale;// * cos(timeVal);
     	    	//phi = (atan(z.z,z.x) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
     	    	dr =  pow(r, Power-1.0)*Power*dr*(1.0 + lowFreqVal*fftBinValScale) + 1.0;
+    	    	//dr =  pow(r, Power-1.0)*Power*dr + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;
     	    	z = pow(r,Power)*vec3(sin(theta)*cos(phi), cos(theta), sin(phi)*sin(theta)) + pos;
@@ -188,19 +189,16 @@ vec2 shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, fl
 
     	for (int i = 0; i < MAX_MARCHING_STEPS; i++) 
 	{
-
 		vec3 pointPos = eye + depth * marchingDirection;
 			
 		// sine displacement
-		float factor = sin(specCentVal * lowFreqVal);// mod(timeVal, 360.0); 
+		float factor = cos(specCentVal * lowFreqVal);// mod(timeVal, 360.0); 
 		float disp = sin(factor * pointPos.x) * sin(factor * pointPos.y) * sin(factor * pointPos.z);
 
 		float dist = sceneSDF(pointPos);
 
-		
         	if (dist < EPSILON) 
 		{
-			
 			if(dist == mandelDist) 
 			{
 				objID = MANDEL_ID;
@@ -212,15 +210,8 @@ vec2 shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, fl
 
 			return vec2(depth, objID);
         	}
-
 		
-        	depth += (dist + (disp * 0.5));
-
-        	//if (depth >= end) 
-		//{
-        	//    return vec2(end, NO_OBJECT);
-        	//}
-
+        	depth += dist + (disp * 0.5);
 	}
 
     	return vec2(end, NO_OBJECT);
