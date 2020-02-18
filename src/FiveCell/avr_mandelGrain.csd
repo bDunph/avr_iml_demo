@@ -216,6 +216,30 @@ endin
 ;endin
 
 ;**************************************************************************************
+instr 7 ; note scheduler
+;**************************************************************************************
+
+kGaussVal gauss 6.0
+kGaussVal += 8.1
+
+kRand random 1, 10
+
+kTrigger metro kRand 
+kMinTim	= 0 
+kMaxNum = 1 
+kInsNum = 8
+kWhen = 0
+gkDur = kGaussVal 
+
+schedkwhen kTrigger, kMinTim, kMaxNum, kInsNum, kWhen, gkDur
+
+aOut oscil 0,	100
+
+outs aOut, aOut
+
+endin
+
+;**************************************************************************************
 instr 8 ; granular instrument using grain3
 ;**************************************************************************************
 
@@ -227,45 +251,27 @@ kGDur	chnget	"grainDur"
 kDens	chnget	"grainDensity"
 kFrPow	chnget	"grainFreqVariationDistrib"
 kPrPow	chnget	"grainPhaseVariationDistrib"
-;kFn	chnget	"grainWaveform"
 
 kGDur = 0.01 + kGDur ; initialisation to avoid perf error 0.0
 kDens = 1 + kDens
 
 ; get control value from application
 kSineControlVal	chnget	"sineControlVal"
-;kCps = kCps * kSineControlVal + 20
 
-  ;kCPS    =       100
-  ;kPhs    =       0
-  ;kFmd    transeg 0,1,0,0, 10,4,15, 10,-4,0
-  ;kFmd	= 3
-  ;kPmd    transeg 0,1,0,0, 10,4,1,  10,-4,0
-  ;kPmd	= 7
-  ;kGDur   =       0.08
-  ;kDens   =       200
-  iMaxOvr =       1000
-  kFn     =       4
-  ;print info. to the terminal
-          ;printks "Random Phase:%5.2F%TPitch Random:%5.2F%n",1,kPmd,kFmd
-	;printks "Grain Density:%f%n", 1, kDens
-  gaOut8    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrPow, kPrPow
-;          outs     aSig*0.06,aSig*0.06
+iMaxOvr = 2000 
+kFn = 4
 
-;kRms	rms	gaOut8
-;	chnset	kRms,	"rmsOut"
+;kAmp	linseg 0.0, p3 * 0.5, 1.0, p3 * 0.5, 0.0
 
-;ifftsize = 2048
-;ioverlap = ifftsize / 4
-;iwinsize = ifftsize * 2
-;iwinshape = 0
-;
-;fsig	pvsanal	gaOut8,	ifftsize,	ioverlap,	iwinsize,	iwinshape
-;
-;kcent	pvscent	fsig
-;	chnset	kcent,	"specCentOut"
+aOut8    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrPow, kPrPow
 
-;printks "Specral Centroid CSound Out:%f%n", 1, kcent
+kAmp	linseg 0.0,	p3 * 0.1,	0.95,	p3 * 0.1,	0.8,	p3 * 0.6,	0.8,	p3 * 0.1,	0.0
+
+kfe  expseg 500, p3*0.9, 1800, p3*0.1, 3000
+kres line .1, p3, .99	;increase resonance
+afil moogladder aOut8, kfe, kres
+
+gaOut8 = afil * kAmp
 
 endin
 
@@ -362,7 +368,9 @@ i1	2	10000
 
 ;i3	2	10000	
 
-i8	2	10000
+i7	2	10000
+
+;i8	2	10000
 
 i9	2	10000
 

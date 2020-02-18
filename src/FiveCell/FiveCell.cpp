@@ -353,6 +353,13 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 	// spectral centroid value from csound
 	//std::cout << "Spectral Centroid Value : " << *m_cspSpecCentOut << std::endl; 
+	if(*m_cspSpecCentOut > 0)
+	{
+		float currentSpecCentVal = *m_cspSpecCentOut;
+		float lerpFraction = 0.8f;
+		m_fInterpolatedSpecCentVal = currentSpecCentVal + lerpFraction * (m_fPrevSpecCentVal - currentSpecCentVal);
+		m_fPrevSpecCentVal = currentSpecCentVal;
+	}
 
 	double lowFreqVals = 0.0f;
 	double highFreqVals = 0.0f;
@@ -372,6 +379,15 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 	m_dLowFreqAvg = lowFreqVals / 341;
 	m_dHighFreqAvg = highFreqVals / 171;	
+
+	//smoothing lowFreqVals data stream 
+	if(m_dLowFreqAvg > 0)
+	{
+		float currentLowFreqVal = static_cast<float>(m_dLowFreqAvg);
+		float lerpFraction = 0.8f;
+		m_fInterpolatedLowFreqVal = currentLowFreqVal + lerpFraction * (m_fPrevLowFreqVal - currentLowFreqVal);
+		m_fPrevLowFreqVal = currentLowFreqVal;
+	}
 
 	//std::cout << "Average amplitudes in low bins: " << m_dLowFreqAvg << std::endl;
 	//std::cout << "Average amplitudes in high bins: " << m_dHighFreqAvg << std::endl;
@@ -1050,9 +1066,9 @@ void FiveCell::draw(glm::mat4 projMat, glm::mat4 viewMat, glm::mat4 eyeMat, Raym
 	
 	glUniform1f(m_gliRandomSizeLocation, sizeVal);
 	glUniform1f(m_gliRMSModulateValLocation, modulateVal);
-	glUniform1f(m_gliSpecCentOutLoc, *m_cspSpecCentOut);
+	glUniform1f(m_gliSpecCentOutLoc, m_fInterpolatedSpecCentVal);
 	glUniform1f(m_gliHighFreqAvgLoc, m_dHighFreqAvg);
-	glUniform1f(m_gliLowFreqAvgLoc, m_dLowFreqAvg);
+	glUniform1f(m_gliLowFreqAvgLoc, m_fInterpolatedLowFreqVal);
 	glUniform1f(m_gliSineControlValLoc, sineControlVal);
 	glUniform1fv(m_gluiFftAmpBinsLoc, NUM_FFT_BINS, (float*)&m_pFftAmpBinOut); 
 	glUniform1i(m_gliNumFftBinsLoc, NUM_FFT_BINS);

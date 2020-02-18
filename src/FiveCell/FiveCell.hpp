@@ -202,5 +202,11 @@ private:
 	double m_dLowFreqAvg;
 	double m_dHighFreqAvg;
 
+	float m_fInterpolatedLowFreqVal;
+	float m_fPrevLowFreqVal;
+
+	float m_fInterpolatedSpecCentVal;
+	float m_fPrevSpecCentVal;
+
 };
 #endif
