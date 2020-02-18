@@ -47,7 +47,7 @@ const vec4 PLANE_NORMAL = vec4(0.0, 1.0, 0.0, 0.0);
 const int MAX_MARCHING_STEPS = 255;
 const float MIN_DIST = 0.01;
 const float MAX_DIST = 100.0;
-const float EPSILON = 0.001;
+const float EPSILON = 0.01;
 const float GAMMA = 2.2;
 const float REFLECT_AMOUNT = 0.02;
 const float OBJ_SIZE = 1.0;
@@ -130,7 +130,7 @@ float mandelbulbSDF(vec3 pos) {
     	    	theta = acos(z.y/r) * thetaScale;// * sin(timeVal);
      	    	phi = atan(z.z,z.x) * phiScale;// * cos(timeVal);
     	    	//phi = (atan(z.z,z.x) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
-    	    	dr =  pow(r, Power-1.0)*Power*dr*(1.0 + lowFreqVal*fftBinValScale) + 1.0;
+    	    	dr =  pow(r, Power-1.0)*Power*dr*(lowFreqVal*fftBinValScale) + 1.0;
     	    	//dr =  pow(r, Power-1.0)*Power*dr + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;
@@ -192,7 +192,7 @@ vec2 shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, fl
 		vec3 pointPos = eye + depth * marchingDirection;
 			
 		// sine displacement
-		float factor = cos(specCentVal * lowFreqVal);// mod(timeVal, 360.0); 
+		float factor = sin(specCentVal * lowFreqVal);// mod(timeVal, 360.0); 
 		float disp = sin(factor * pointPos.x) * sin(factor * pointPos.y) * sin(factor * pointPos.z);
 
 		float dist = sceneSDF(pointPos);
@@ -211,7 +211,7 @@ vec2 shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, fl
 			return vec2(depth, objID);
         	}
 		
-        	depth += dist + (disp * 0.5);
+        	depth += dist;// + (disp * 0.00025);
 	}
 
     	return vec2(end, NO_OBJECT);
