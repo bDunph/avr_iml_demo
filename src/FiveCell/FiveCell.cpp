@@ -229,6 +229,7 @@ bool FiveCell::setup(std::string csd)
 	m_bCurrentMsgState = false;
 	m_bRunMsg = true;
 	m_bCurrentRunMsgState = false;
+	m_bModelTrained = false;
 	sizeVal = 0.0f;
 
 //********************************************************************************************
@@ -776,7 +777,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 #elif _WIN32
 		staticRegression.train(trainingSet);
 #endif
-
+		m_bModelTrained = true;
 		std::cout << "Model Trained" << std::endl;
 	}	
 	m_bPrevTrainState = machineLearning.bTrainModel;
@@ -785,7 +786,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 	// run/stop model
 	bool currentHaltState = m_bPrevHaltState;
-	if(machineLearning.bRunModel && !machineLearning.bHaltModel)
+	if(machineLearning.bRunModel && !machineLearning.bHaltModel && m_bModelTrained)
 	{
 		std::vector<double> modelOut;
 		std::vector<double> modelIn;
@@ -870,7 +871,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	}
 	m_bPrevHaltState = machineLearning.bHaltModel;
 #elif _WIN32
-	if(machineLearning.bRunModel)
+	if(machineLearning.bRunModel && m_bModelTrained)
 	{
 		std::vector<double> modelOut;
 		std::vector<double> modelIn;

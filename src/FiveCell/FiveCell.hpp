@@ -167,6 +167,7 @@ private:
 	bool m_bMsg;
 	bool m_bRunMsg;
 	bool m_bCurrentRunMsgState;
+	bool m_bModelTrained;
 
 	//lighting components
 	glm::vec3 m_vec3MoonDirection;

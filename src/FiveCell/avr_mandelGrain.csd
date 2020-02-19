@@ -59,7 +59,7 @@ kdepth = 0.99 + (0.01 * kSineControlVal)
 fmask	pvsmaska	fsig,	ifn,	kdepth		
 
 aOut0	pvsynth	fmask
-	outs	aOut0 * 0.8,	aOut0 * 0.8
+	outs	aOut0 * 0.1,	aOut0 * 0.1
 
 endin
 
@@ -220,7 +220,7 @@ instr 7 ; note scheduler
 ;**************************************************************************************
 
 kGaussVal gauss 6.0
-kGaussVal += 8.1
+kGaussVal += 6.1
 
 kRand random 1, 10
 
@@ -267,8 +267,8 @@ aOut8    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrP
 
 kAmp	linseg 0.0,	p3 * 0.1,	0.95,	p3 * 0.1,	0.8,	p3 * 0.6,	0.8,	p3 * 0.1,	0.0
 
-kfe  expseg 500, p3*0.9, 1800, p3*0.1, 3000
-kres line .1, p3, .99	;increase resonance
+kfe  expseg 500, p3*0.9, 900, p3*0.1,800 
+kres linseg 0.1, p3 * 0.2, 0.3, p3 * 0.4, 0.25, p3 * 0.2, 0.5, p3 * 0.2, 0.35	;vary resonance
 afil moogladder aOut8, kfe, kres
 
 gaOut8 = afil * kAmp
@@ -342,8 +342,8 @@ aLeftSig, aRightSig  hrtfmove2	asig, kAzimuthVal, kElevationVal, "hrtf-48000-lef
 aLeftSig = aLeftSig / (kDist + 0.00001)
 aRightSig = aRightSig / (kDist + 0.00001)
 	
-aL = aLeftSig
-aR = aRightSig
+aL = aLeftSig * 0.8
+aR = aRightSig * 0.8
 
 outs	aL,	aR
 endin

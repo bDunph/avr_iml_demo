@@ -47,7 +47,7 @@ const vec4 PLANE_NORMAL = vec4(0.0, 1.0, 0.0, 0.0);
 const int MAX_MARCHING_STEPS = 255;
 const float MIN_DIST = 0.01;
 const float MAX_DIST = 100.0;
-const float EPSILON = 0.01;
+const float EPSILON = 0.001;
 const float GAMMA = 2.2;
 const float REFLECT_AMOUNT = 0.02;
 const float OBJ_SIZE = 1.0;
@@ -130,7 +130,7 @@ float mandelbulbSDF(vec3 pos) {
     	    	theta = acos(z.y/r) * thetaScale;// * sin(timeVal);
      	    	phi = atan(z.z,z.x) * phiScale;// * cos(timeVal);
     	    	//phi = (atan(z.z,z.x) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
-    	    	dr =  pow(r, Power-1.0)*Power*dr*(lowFreqVal*fftBinValScale) + 1.0;
+    	    	dr =  pow(r, Power-1.0)*Power*dr*(0.8+lowFreqVal*fftBinValScale) + 1.0;
     	    	//dr =  pow(r, Power-1.0)*Power*dr + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;
@@ -139,7 +139,7 @@ float mandelbulbSDF(vec3 pos) {
     	    	//z = pow(r,Power)*vec3(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta)) + pos;
     	    }
 
-    	float result = 0.5*log(r)*r/dr;
+    	float result = abs(0.5*log(r)*r/dr);
 	return result;;
 }
 //----------------------------------------------------------------------------------------
@@ -162,8 +162,8 @@ float sceneSDF(vec3 pos)
 	float function2x = clamp(function1x, 0.0, 3.0);
 	float function2z = clamp(function1z, 0.0, 3.0);
 
-	newPos.y += function2x + 1.5;
-	newPos.y += function2z + 1.5;
+	newPos.y += function2x;// + 1.0;
+	newPos.y += function2z;// + 1.0;
 
 	planeDist = planeSDF(newPos, PLANE_NORMAL);	
 
@@ -192,8 +192,8 @@ vec2 shortestDistanceToSurface(vec3 eye, vec3 marchingDirection, float start, fl
 		vec3 pointPos = eye + depth * marchingDirection;
 			
 		// sine displacement
-		float factor = sin(specCentVal * lowFreqVal);// mod(timeVal, 360.0); 
-		float disp = sin(factor * pointPos.x) * sin(factor * pointPos.y) * sin(factor * pointPos.z);
+		//float factor = sin(specCentVal * lowFreqVal);// mod(timeVal, 360.0); 
+		//float disp = sin(factor * pointPos.x) * sin(factor * pointPos.y) * sin(factor * pointPos.z);
 
 		float dist = sceneSDF(pointPos);
 
@@ -274,7 +274,7 @@ float calcAO( in vec3 pos, in vec3 nor )
 float softShadow(vec3 rayOrigin, vec3 rayDirection, float minDist, float maxDist, float penumbra){
 
 	float depth = minDist;
-	float ph = 1e10;
+	float ph = 10.0;//1e10;
 
 	float retValue = 1.0;
 
@@ -559,16 +559,16 @@ vec3 rayColour(vec3 pos, vec3 rayOrigin, vec3 rayDirection, float objID){
 		//K_a = texture(ground.texture, normPos.xz).rgb;
 		//K_d = texture(ground.texture, normPos.xz).rgb;
 
-		//matColour = ground.colour;
+		matColour = ground.colour;
 		//matColour = vec3(0.0, 0.0, 0.0);
-		//K_a = ground.ambient;
+		K_a = ground.ambient;
 		//K_a = vec3(0.0, 0.0, 0.0);
-		//K_d = ground.diffuse;
-		//K_s = ground.specular;
-		//shininess = ground.shininess;
+		K_d = ground.diffuse;
+		K_s = ground.specular;
+		shininess = ground.shininess;
 		
-		//retCol = phongIllumination(K_a, K_d, K_s, shininess, matColour, pos, rayOrigin);
-		retCol = vec3(0.0, 0.0, 0.0);
+		retCol = phongIllumination(K_a, K_d, K_s, shininess, matColour, pos, rayOrigin);
+		//retCol = vec3(0.0, 0.0, 0.0);
 		
 	} else if(objID == MANDEL_ID){
 
