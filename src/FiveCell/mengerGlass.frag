@@ -9,7 +9,7 @@
 #define REFRACTIVE_INDEX_OUTSIDE 1.00029
 #define REFRACTIVE_INDEX_INSIDE  1.125
 
-#define MAX_RAY_BOUNCES 4 
+#define MAX_RAY_BOUNCES 1 
 #define OBJECT_ABSORB_COLOUR vec3(8.0, 8.0, 3.0)
 #define OBJECT_ABSORB_COLOUR_2 vec3(0.3, 9.0, 9.0)
 
@@ -152,7 +152,7 @@ float sceneSDF(vec3 pos)
 
 	float scale = randSize;// + (noise * 0.001);
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
-	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / scale) * scale;
+	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / scale) * scale;
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
 
 	vec3 newPos = pos;

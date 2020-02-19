@@ -220,18 +220,21 @@ instr 7 ; note scheduler
 ;**************************************************************************************
 
 kGaussVal gauss 6.0
-kGaussVal += 6.1
 
-kRand random 1, 10
+seed 0
+kRand random 0.1, 5.0
 
-kTrigger metro kRand 
+seed 1
+kRand2 random 1, 5 
+
+kTrigger metro kRand2 
 kMinTim	= 0 
 kMaxNum = 1 
 kInsNum = 8
 kWhen = 0
-gkDur = kGaussVal 
+gkDur = kRand 
 
-schedkwhen kTrigger, kMinTim, kMaxNum, kInsNum, kWhen, gkDur
+schedkwhen kTrigger, kMinTim, kMaxNum, kInsNum, kWhen, gkDur, 500+kGaussVal, 900+kGaussVal, 800+kGaussVal
 
 aOut oscil 0,	100
 
@@ -259,7 +262,7 @@ kDens = 1 + kDens
 kSineControlVal	chnget	"sineControlVal"
 
 iMaxOvr = 2000 
-kFn = 4
+kFn = 3
 
 ;kAmp	linseg 0.0, p3 * 0.5, 1.0, p3 * 0.5, 0.0
 
@@ -267,7 +270,9 @@ aOut8    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrP
 
 kAmp	linseg 0.0,	p3 * 0.1,	0.95,	p3 * 0.1,	0.8,	p3 * 0.6,	0.8,	p3 * 0.1,	0.0
 
-kfe  expseg 500, p3*0.9, 900, p3*0.1,800 
+
+;kfe  expseg 500 + kGaussVal, p3*0.9, 900 + kGaussVal, p3*0.1,800 + kGaussVal 
+kfe  expseg p4, p3*0.9, p5, p3*0.1, p6
 kres linseg 0.1, p3 * 0.2, 0.3, p3 * 0.4, 0.25, p3 * 0.2, 0.5, p3 * 0.2, 0.35	;vary resonance
 afil moogladder aOut8, kfe, kres
 
