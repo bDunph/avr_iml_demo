@@ -59,7 +59,7 @@ kdepth = 0.99 + (0.01 * kSineControlVal)
 fmask	pvsmaska	fsig,	ifn,	kdepth		
 
 aOut0	pvsynth	fmask
-	outs	aOut0 * 0.1,	aOut0 * 0.1
+	outs	aOut0 * 0.01,	aOut0 * 0.01
 
 endin
 
@@ -234,7 +234,7 @@ kInsNum = 8
 kWhen = 0
 gkDur = kRand 
 
-schedkwhen kTrigger, kMinTim, kMaxNum, kInsNum, kWhen, gkDur, 500+kGaussVal, 900+kGaussVal, 800+kGaussVal
+schedkwhen kTrigger, kMinTim, kMaxNum, kInsNum, kWhen, gkDur, 1000+kGaussVal, 1400+kGaussVal, 1200+kGaussVal
 
 aOut oscil 0,	100
 

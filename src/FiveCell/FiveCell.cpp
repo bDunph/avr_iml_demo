@@ -1009,7 +1009,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	{
 	
 		staticRegression.readJSON(mySavedModel);	
-
+		
 		std::cout << "Loading Data and Training Model" << std::endl;
 	}
 	m_bPrevLoadState = machineLearning.bLoadModel;
