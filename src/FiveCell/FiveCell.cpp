@@ -769,7 +769,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 	// train model
 	bool currentTrainState = m_bPrevTrainState;
-	if(machineLearning.bTrainModel != currentTrainState && machineLearning.bTrainModel == true)
+	if(machineLearning.bTrainModel != currentTrainState && machineLearning.bTrainModel == true && trainingSet.size() > 0)
 	{
 
 #ifdef __APPLE__
@@ -780,6 +780,11 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		m_bModelTrained = true;
 		std::cout << "Model Trained" << std::endl;
 	}	
+	else if(machineLearning.bTrainModel != currentTrainState && machineLearning.bTrainModel == true && trainingSet.size() == 0)
+
+	{
+		std::cout << "Model not trained. No training set found." << std::endl;
+	}
 	m_bPrevTrainState = machineLearning.bTrainModel;
 
 #ifdef __APPLE__
@@ -987,7 +992,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	{
 
 		staticRegression.writeJSON(mySavedModel);
-		std::cout << "Saving Training Data" << std::endl;
+		std::cout << "Saving Model" << std::endl;
 	}
 	m_bPrevSaveState = machineLearning.bSaveModel;
 #endif
@@ -1008,9 +1013,17 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	if(machineLearning.bLoadModel != currentLoadState && machineLearning.bLoadModel == true)
 	{
 	
-		staticRegression.readJSON(mySavedModel);	
-		
-		std::cout << "Loading Data and Training Model" << std::endl;
+		bool read = staticRegression.readJSON(mySavedModel);	
+		if(read)
+		{
+			std::cout << "Loading Data and Training Model" << std::endl;
+
+			m_bModelTrained = true;
+		}	
+		else
+		{
+			std::cout << "Saved model not read" << std::endl;
+		}
 	}
 	m_bPrevLoadState = machineLearning.bLoadModel;
 #endif

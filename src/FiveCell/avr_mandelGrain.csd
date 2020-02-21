@@ -59,7 +59,7 @@ kdepth = 0.99 + (0.01 * kSineControlVal)
 fmask	pvsmaska	fsig,	ifn,	kdepth		
 
 aOut0	pvsynth	fmask
-	outs	aOut0 * 0.01,	aOut0 * 0.01
+	outs	aOut0 * 0.05,	aOut0 * 0.05
 
 endin
 
@@ -222,7 +222,7 @@ instr 7 ; note scheduler
 kGaussVal gauss 6.0
 
 seed 0
-kRand random 0.1, 5.0
+kRand random 0.1, 10.0
 
 seed 1
 kRand2 random 1, 5 
@@ -234,7 +234,7 @@ kInsNum = 8
 kWhen = 0
 gkDur = kRand 
 
-schedkwhen kTrigger, kMinTim, kMaxNum, kInsNum, kWhen, gkDur, 1000+kGaussVal, 1400+kGaussVal, 1200+kGaussVal
+schedkwhen kTrigger, kMinTim, kMaxNum, kInsNum, kWhen, gkDur, 1000+kGaussVal, 1400+kGaussVal, 1200+kGaussVal, 800+kGaussVal, 700+kGaussVal, 1000+kGaussVal
 
 aOut oscil 0,	100
 
@@ -272,7 +272,7 @@ kAmp	linseg 0.0,	p3 * 0.1,	0.95,	p3 * 0.1,	0.8,	p3 * 0.6,	0.8,	p3 * 0.1,	0.0
 
 
 ;kfe  expseg 500 + kGaussVal, p3*0.9, 900 + kGaussVal, p3*0.1,800 + kGaussVal 
-kfe  expseg p4, p3*0.9, p5, p3*0.1, p6
+kfe  expseg p4, p3*0.3, p5, p3*0.1, p6, p3*0.2, p7, p3*0.3, p8, p3*0.1, p9
 kres linseg 0.1, p3 * 0.2, 0.3, p3 * 0.4, 0.25, p3 * 0.2, 0.5, p3 * 0.2, 0.35	;vary resonance
 afil moogladder aOut8, kfe, kres
 
