@@ -130,7 +130,7 @@ float mandelbulbSDF(vec3 pos) {
     	    	theta = acos(z.y/r) * thetaScale;// * sin(timeVal);
      	    	phi = atan(z.z,z.x) * phiScale;// * cos(timeVal);
     	    	//phi = (atan(z.z,z.x) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
-    	    	dr =  pow(r, Power-1.0)*Power*dr*(0.8+lowFreqVal*fftBinValScale) + 1.0;
+    	    	dr =  pow(r, Power-1.0)*Power*dr*(0.7+lowFreqVal*fftBinValScale) + 1.0;
     	    	//dr =  pow(r, Power-1.0)*Power*dr + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;
@@ -152,7 +152,7 @@ float sceneSDF(vec3 pos)
 
 	float scale = randSize;// + (noise * 0.001);
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
-	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / scale) * scale;
+	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.7, 0.0)) / scale) * scale;
 	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
 
 	vec3 newPos = pos;
@@ -586,9 +586,9 @@ vec3 rayColour(vec3 pos, vec3 rayOrigin, vec3 rayDirection, float objID){
 		//following demofox blog and shadertoy for reflection etc. https://www.shadertoy.com/view/4tyXDR and https://blog.demofox.org/2017/01/09/raytracing-reflection-refraction-fresnel-total-internal-reflection-and-beers-law/
 
 		//calculate how much to reflect or transmit
-		float reflectionScaleVal = FresnelReflectAmount(REFRACTIVE_INDEX_OUTSIDE, REFRACTIVE_INDEX_INSIDE, incidentNormal, rayDirection);	
+		//float reflectionScaleVal = FresnelReflectAmount(REFRACTIVE_INDEX_OUTSIDE, REFRACTIVE_INDEX_INSIDE, incidentNormal, rayDirection);	
 
-		float refractScaleVal = 1.0 - reflectionScaleVal;
+		//float refractScaleVal = 1.0 - reflectionScaleVal;
 
 		//get reflection colour
 		#if DO_REFLECTION
