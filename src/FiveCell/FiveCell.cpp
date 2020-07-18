@@ -390,51 +390,32 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		m_fPrevLowFreqVal = currentLowFreqVal;
 	}
 
-	//std::cout << "Average amplitudes in low bins: " << m_dLowFreqAvg << std::endl;
-	//std::cout << "Average amplitudes in high bins: " << m_dHighFreqAvg << std::endl;
+	// situated sound source
+	glm::vec4 objPosition = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
+	glm::mat4 objModelMatrix = glm::mat4(1.0f);		
 
-	//matrices for raymarch shaders
-	//modelViewEyeMat = eyeMat * viewMat * raymarchQuadModelMatrix;
-	//inverseMVEMat = glm::inverse(modelViewEyeMat);
-	//modelViewEyeProjectionMat = projMat * eyeMat * viewMat * raymarchQuadModelMatrix;
-	//inverseMVEPMat = glm::inverse(modelViewEyeProjectionMat);
-
-	glm::vec4 mengerPosition = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	glm::mat4 mengerModelMatrix = glm::mat4(1.0f);		
-
-	glm::vec4 posCameraSpace = viewMat * mengerModelMatrix * mengerPosition;;		
-
-	//position of menger cube in world space
-	glm::vec4 posWorldSpace = mengerModelMatrix * mengerPosition;
-	
-	//calculate azimuth and elevation values for hrtf
+	glm::vec4 soundPosCameraSpace = viewMat * objModelMatrix * objPosition;	
 	glm::vec4 viewerPosCameraSpace = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-	glm::vec4 viewerPosWorldSpace = glm::vec4(camPos, 1.0f);;
 
-	glm::vec4 soundPosCameraSpace = posCameraSpace;
-	glm::vec4 soundPosWorldSpace = posWorldSpace;
-
-	float rCamSpace = sqrt(pow(soundPosCameraSpace.x, 2) + pow(soundPosCameraSpace.y, 2) + pow(soundPosCameraSpace.z, 2));
+	// distance value camera space
+	float distCamSpace = sqrt(pow(soundPosCameraSpace.x, 2) + pow(soundPosCameraSpace.y, 2) + pow(soundPosCameraSpace.z, 2));
 		
-	float rWorldSpace = sqrt(pow(soundPosWorldSpace.x - viewerPosWorldSpace.x, 2) + pow(soundPosWorldSpace.y - viewerPosWorldSpace.y, 2) + pow(soundPosWorldSpace.z - viewerPosWorldSpace.z, 2));
-
 	//azimuth in camera space
 	float valX = soundPosCameraSpace.x - viewerPosCameraSpace.x;
 	float valZ = soundPosCameraSpace.z - viewerPosCameraSpace.z;
-
 	float azimuth = atan2(valX, valZ);
 	azimuth *= (180.0f/PI); 	
 	
 	//elevation in camera space
 	float oppSide = soundPosCameraSpace.y - viewerPosCameraSpace.y;
-	float sinVal = oppSide / rCamSpace;
+	float sinVal = oppSide / distCamSpace;
 	float elevation = asin(sinVal);
 	elevation *= (180.0f/PI);		
 	
 	//send values to Csound pointers
 	*hrtfVals[0] = (MYFLT)azimuth;
 	*hrtfVals[1] = (MYFLT)elevation;
-	*hrtfVals[2] = (MYFLT)rCamSpace;
+	*hrtfVals[2] = (MYFLT)distCamSpace;
 
 	//sine function
 	sineControlVal = sin(glfwGetTime() * 0.15f);
