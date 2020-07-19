@@ -276,12 +276,12 @@ kfe  expseg p4, p3*0.3, p5, p3*0.1, p6, p3*0.2, p7, p3*0.3, p8, p3*0.1, p9
 kres linseg 0.1, p3 * 0.2, 0.3, p3 * 0.4, 0.25, p3 * 0.2, 0.5, p3 * 0.2, 0.35	;vary resonance
 afil moogladder aOut8, kfe, kres
 
-gaOut8 = afil * kAmp
+gaGranularOut = afil * kAmp
 
 endin
 
 ;**************************************************************************************
-instr 9 ; Real-time Spectral Analysis Instrument 
+instr 9 ; Spectral Analysis Instrument 
 ;**************************************************************************************
 
 ifftsize = 1024 
@@ -289,8 +289,8 @@ ioverlap = ifftsize / 4
 iwinsize = ifftsize * 2
 iwinshape = 0
 
-; route output from instrument 2 above to pvsanal
-fsig	pvsanal	gaOut8,	ifftsize,	ioverlap,	iwinsize,	iwinshape
+; route output from the granular instrument to pvsanal
+fsig	pvsanal	gaGranularOut,	ifftsize,	ioverlap,	iwinsize,	iwinshape
 
 ; get info from pvsanal and print
 ioverlap,	inbins,	iwindowsize,	iformat	pvsinfo	fsig
@@ -316,8 +316,8 @@ loop:
 	kAmp	tablekt	kCount,	iAmpTable
 
 	; send val out to application
-	S_ChannelName	sprintfk	"fftAmpBin%d",	kCount
-	chnset	kAmp,	S_ChannelName
+	S_channelName	sprintfk	"fftAmpBin%d",	kCount
+	chnset	kAmp,	S_channelName
 	
 	loop_lt	kCount,	1,	inbins,	loop
 
@@ -326,7 +326,7 @@ contin:
 endin
 
 ;**************************************************************************************
-instr 12 ; Hrtf Instrument
+instr 12 ; 3D Source Location Instrument
 ;**************************************************************************************
 kPortTime linseg 0.0, 0.001, 0.05 
 
@@ -335,15 +335,9 @@ kElevationVal chnget "elevation"
 kDistanceVal chnget "distance" 
 kDist portk kDistanceVal, kPortTime ;to filter out audio artifacts due to the distance changing too quickly
 
-;asig	sum	gaOut0,	gaOut1
-;asig	sum	gaOut3,	gaOut4
-asig = gaOut8 * 0.5
-;asig = asig * 0.5
+aSig = gaGranularOut * 0.5
 
-;kRmsGran	rms	asig	
-;	chnset	kRmsGran,	"rmsOut"
-
-aLeftSig, aRightSig  hrtfmove2	asig, kAzimuthVal, kElevationVal, "hrtf-48000-left.dat", "hrtf-48000-right.dat", 4, 9.0, 48000
+aLeftSig, aRightSig  hrtfmove2	aSig, kAzimuthVal, kElevationVal, "hrtf-48000-left.dat", "hrtf-48000-right.dat", 4, 9.0, 48000
 aLeftSig = aLeftSig / (kDist + 0.00001)
 aRightSig = aRightSig / (kDist + 0.00001)
 	

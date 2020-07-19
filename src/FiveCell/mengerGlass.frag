@@ -118,29 +118,22 @@ float mandelbulbSDF(vec3 pos) {
 
 	float Power = 8.0;
     	float r = length(pos);
-	//r *= fftAmpBins[int(numFftBins * sineControlVal)];
     	if(r > 1.5) return r-1.2;
     	vec3 z = pos;
     	float dr = 1.0, theta, phi;
     	    for (int i = 0; i < 5; i++) {
     	    	r = length(z);
     	    	if (r>1.5) break;
-    	    	//theta = acos((z.y/r) + (0.01 *  sineControlVal));
-    	    	//theta = (acos(z.y/r) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
-    	    	theta = acos(z.y/r) * thetaScale;// * sin(timeVal);
-     	    	phi = atan(z.z,z.x) * phiScale;// * cos(timeVal);
-    	    	//phi = (atan(z.z,z.x) + (noise*0.1*(1.0/sineControlVal))) * sineControlVal;
+    	    	theta = acos(z.y/r) * thetaScale;
+     	    	phi = atan(z.z,z.x) * phiScale;
     	    	dr =  pow(r, Power-1.0)*Power*dr*(0.7+lowFreqVal*fftBinValScale) + 1.0;
-    	    	//dr =  pow(r, Power-1.0)*Power*dr + 1.0;
     	    	theta *= Power;
     	    	phi *= Power;
     	    	z = pow(r,Power)*vec3(sin(theta)*cos(phi), cos(theta), sin(phi)*sin(theta)) + pos;
-    	    	//z = pow(r,Power)*vec3(sin(theta * sineControlVal)*cos(phi), sin(phi)*sin(theta), cos(theta)) + pos;
-    	    	//z = pow(r,Power)*vec3(sin(theta)*cos(phi), sin(phi)*sin(theta), cos(theta)) + pos;
     	    }
 
     	float result = abs(0.5*log(r)*r/dr);
-	return result;;
+	return result;
 }
 //----------------------------------------------------------------------------------------
 

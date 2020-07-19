@@ -365,21 +365,12 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	double lowFreqVals = 0.0f;
 	double highFreqVals = 0.0f;
 	//fft frequency bin values from Csound
-	for(int i = 0; i < NUM_FFT_BINS; i++)
+	for(int i = 0; i < NUM_FFT_BINS * 0.66; i++)
 	{
-		//std::cout << *m_pFftAmpBinOut[i] << std::endl;	
-		if(i < 342 && i > 0)
-		{
-			lowFreqVals += *m_pFftAmpBinOut[i];
-		}
-		else if(i < NUM_FFT_BINS && i >= 342)
-		{
-			highFreqVals += *m_pFftAmpBinOut[i];
-		}
+		lowFreqVals += *m_pFftAmpBinOut[i];
 	}	
 
-	m_dLowFreqAvg = lowFreqVals / 341;
-	m_dHighFreqAvg = highFreqVals / 171;	
+	m_dLowFreqAvg = lowFreqVals / (NUM_FFT_BINS * 0.66); 
 
 	//smoothing lowFreqVals data stream 
 	if(m_dLowFreqAvg > 0)
@@ -394,7 +385,7 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 	glm::vec4 objPosition = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 	glm::mat4 objModelMatrix = glm::mat4(1.0f);		
 
-	glm::vec4 soundPosCameraSpace = viewMat * objModelMatrix * objPosition;	
+	glm::vec4 soundPosCameraSpace = viewMat * objModelMatrix * objPosition;;	
 	glm::vec4 viewerPosCameraSpace = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
 
 	// distance value camera space
@@ -750,8 +741,13 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 
 	// train model
 	bool currentTrainState = m_bPrevTrainState;
+#ifdef __APPLE__
+	if(machineLearning.bTrainModel != currentTrainState && machineLearning.bTrainModel == true && trainingData.trainingSet.size() > 0)
+#elif _WIN32
 	if(machineLearning.bTrainModel != currentTrainState && machineLearning.bTrainModel == true && trainingSet.size() > 0)
+#endif
 	{
+
 
 #ifdef __APPLE__
 		staticRegression.train(trainingData);
@@ -761,8 +757,11 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		m_bModelTrained = true;
 		std::cout << "Model Trained" << std::endl;
 	}	
+#ifdef __APPLE__
+	else if(machineLearning.bTrainModel != currentTrainState && machineLearning.bTrainModel == true && trainingData.trainingSet.size() == 0)
+#elif _WIN32
 	else if(machineLearning.bTrainModel != currentTrainState && machineLearning.bTrainModel == true && trainingSet.size() == 0)
-
+#endif
 	{
 		std::cout << "Model not trained. No training set found." << std::endl;
 	}
