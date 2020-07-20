@@ -243,7 +243,7 @@ outs aOut, aOut
 endin
 
 ;**************************************************************************************
-instr 8 ; granular instrument using grain3
+instr 8 ; Granular Instrument 
 ;**************************************************************************************
 
 kCps	chnget	"grainFreq"
@@ -259,12 +259,10 @@ kGDur = 0.01 + kGDur ; initialisation to avoid perf error 0.0
 kDens = 1 + kDens
 
 ; get control value from application
-kSineControlVal	chnget	"sineControlVal"
+;kSineControlVal	chnget	"sineControlVal"
 
 iMaxOvr = 2000 
 kFn = 3
-
-;kAmp	linseg 0.0, p3 * 0.5, 1.0, p3 * 0.5, 0.0
 
 aOut8    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrPow, kPrPow
 

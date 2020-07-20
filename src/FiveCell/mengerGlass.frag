@@ -61,17 +61,17 @@ float mandelDist, planeDist;
 
 uniform mat4 MVEPMat;
 
-uniform float sineControlVal;
+//uniform float sineControlVal;
 
-uniform samplerCube skyboxTex;
+//uniform samplerCube skyboxTex;
 uniform float randSize;
-uniform float rmsModVal;
-uniform float specCentVal;
-uniform int numFftBins;
-uniform float highFreqVal;
+//uniform float rmsModVal;
+//uniform float specCentVal;
+//uniform int numFftBins;
+//uniform float highFreqVal;
 uniform float lowFreqVal;
-uniform float fftAmpBins[NUM_FFT_BINS];
-uniform float timeVal;
+//uniform float fftAmpBins[NUM_FFT_BINS];
+//uniform float timeVal;
 uniform float fftBinValScale;
 uniform float phiScale;
 uniform float thetaScale;
@@ -112,28 +112,39 @@ float planeSDF(vec3 pos, vec4 normal){
 }
 
 //----------------------------------------------------------------------------------------
-// Mandelbulb SDF taken from https://www.shadertoy.com/view/tdtGRj
+// Mandelbulb SDF taken from https://www.shadertoy.com/view/tdtGRj and based on 
+// http://blog.hvidtfeldts.net/index.php/2011/09/distance-estimated-3d-fractals-v-the-mandelbulb-different-de-approximations/
 //----------------------------------------------------------------------------------------
 float mandelbulbSDF(vec3 pos) {
 
 	float Power = 8.0;
+
     	float r = length(pos);
     	if(r > 1.5) return r-1.2;
+
     	vec3 z = pos;
     	float dr = 1.0, theta, phi;
-    	    for (int i = 0; i < 5; i++) {
+
+    	for (int i = 0; i < 5; i++) {
     	    	r = length(z);
     	    	if (r>1.5) break;
+
+		// convert to polar coordinates
     	    	theta = acos(z.y/r) * thetaScale;
      	    	phi = atan(z.z,z.x) * phiScale;
+
+		// length of the running complex derivative
     	    	dr =  pow(r, Power-1.0)*Power*dr*(0.7+lowFreqVal*fftBinValScale) + 1.0;
+
+		// scale and rotate 
     	    	theta *= Power;
     	    	phi *= Power;
+
+		// mandelbulb formula with y and z terms swapped to rotate the object
     	    	z = pow(r,Power)*vec3(sin(theta)*cos(phi), cos(theta), sin(phi)*sin(theta)) + pos;
     	    }
 
-    	float result = abs(0.5*log(r)*r/dr);
-	return result;
+    	return abs(0.5*log(r)*r/dr);
 }
 //----------------------------------------------------------------------------------------
 
@@ -143,10 +154,8 @@ float mandelbulbSDF(vec3 pos) {
 float sceneSDF(vec3 pos)
 {
 
-	float scale = randSize;// + (noise * 0.001);
-	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.8, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
+	float scale = randSize;
 	mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.7, 0.0)) / scale) * scale;
-	//mandelDist = mandelbulbSDF((pos + vec3(0.0, -1.0, 0.0)) / vec3(scale, scale*0.5, 1.0)) * min(scale, min(scale * 0.5, 1.0));
 
 	vec3 newPos = pos;
 	float function1x = 0.09*sin(newPos.x*0.4)*newPos.x;
@@ -155,8 +164,8 @@ float sceneSDF(vec3 pos)
 	float function2x = clamp(function1x, 0.0, 3.0);
 	float function2z = clamp(function1z, 0.0, 3.0);
 
-	newPos.y += function2x;// + 1.0;
-	newPos.y += function2z;// + 1.0;
+	newPos.y += function2x;
+	newPos.y += function2z;
 
 	planeDist = planeSDF(newPos, PLANE_NORMAL);	
 

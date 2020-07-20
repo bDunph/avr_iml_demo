@@ -129,12 +129,12 @@ bool FiveCell::setup(std::string csd)
 		return false;
 	}
 
-	const char* grainWaveform = "grainWaveform";
-	if(session->GetChannelPtr(m_cspGrainWaveform, grainWaveform, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
-	{
-		std::cout << "GetChannelPtr could not get the grainWaveform value" << std::endl;
-		return false;
-	}
+	//const char* grainWaveform = "grainWaveform";
+	//if(session->GetChannelPtr(m_cspGrainWaveform, grainWaveform, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
+	//{
+	//	std::cout << "GetChannelPtr could not get the grainWaveform value" << std::endl;
+	//	return false;
+	//}
 
 	const char* sineVal = "sineControlVal";
 	if(session->GetChannelPtr(m_cspSineControlVal, sineVal, CSOUND_INPUT_CHANNEL | CSOUND_CONTROL_CHANNEL) != 0)
@@ -663,10 +663,10 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		*m_cspGrainPhaseVariationDistrib = (MYFLT)valGrainPhaseVariationDistrib;
 
 		// grain waveform (kfn)
-		std::uniform_real_distribution<float> distGrainWaveform(1.0f, 4.0f);
-		std::default_random_engine genGrainWaveform(rd());
-		float valGrainWaveform = floor(distGrainWaveform(genGrainWaveform));
-		*m_cspGrainWaveform = (MYFLT)valGrainWaveform;
+		//std::uniform_real_distribution<float> distGrainWaveform(1.0f, 4.0f);
+		//std::default_random_engine genGrainWaveform(rd());
+		//float valGrainWaveform = floor(distGrainWaveform(genGrainWaveform));
+		//*m_cspGrainWaveform = (MYFLT)valGrainWaveform;
 		
 		//random visual params
 
@@ -710,7 +710,6 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		inputData.push_back((double)controllerQuat_1.y); //12
 		inputData.push_back((double)controllerQuat_1.z); //13
 
-
 		outputData.push_back((double)*m_cspGrainFreq); //0
 		outputData.push_back((double)*m_cspGrainPhase); //1
 		outputData.push_back((double)*m_cspRandFreq); //2
@@ -719,11 +718,11 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		outputData.push_back((double)*m_cspGrainDensity); //5
 		outputData.push_back((double)*m_cspGrainFreqVariationDistrib); //6
 		outputData.push_back((double)*m_cspGrainPhaseVariationDistrib); //7
-		outputData.push_back((double)*m_cspGrainWaveform); //8
-		outputData.push_back((double)sizeVal); //9
-		outputData.push_back((double)valBinScale); //10
-		outputData.push_back((double)valThetaScale); //11
-		outputData.push_back((double)valPhiScale); //12
+		//outputData.push_back((double)*m_cspGrainWaveform); //8
+		outputData.push_back((double)sizeVal); //8
+		outputData.push_back((double)valBinScale); //9
+		outputData.push_back((double)valThetaScale); //10
+		outputData.push_back((double)valPhiScale); //11
 
 #ifdef __APPLE__
 		trainingData.recordSingleElement(inputData, outputData);	
@@ -825,25 +824,25 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		if(modelOut[7] < -1.0f) modelOut[7] = -1.0f;
 		*m_cspGrainPhaseVariationDistrib = (MYFLT)modelOut[7];
 
-		if(modelOut[8] > 4.0f) modelOut[8] = 4.0f;
-		if(modelOut[8] < 1.0f) modelOut[8] = 1.0f;
-		*m_cspGrainWaveform = (MYFLT)floor(modelOut[8]);
+		//if(modelOut[8] > 4.0f) modelOut[8] = 4.0f;
+		//if(modelOut[8] < 1.0f) modelOut[8] = 1.0f;
+		//*m_cspGrainWaveform = (MYFLT)floor(modelOut[8]);
 
-		if(modelOut[9] > 0.8f) modelOut[9] = 0.8f;
-		if(modelOut[9] < 0.1f) modelOut[9] = 0.1f;
-		sizeVal = (float)modelOut[9];
+		if(modelOut[8] > 0.8f) modelOut[8] = 0.8f;
+		if(modelOut[8] < 0.1f) modelOut[8] = 0.1f;
+		sizeVal = (float)modelOut[8];
  
-		if(modelOut[10] > 100.0f) modelOut[10] = 100.0f;
-		if(modelOut[10] < 2.0f) modelOut[10] = 2.0f;
-		valBinScale = (float)modelOut[10];
+		if(modelOut[9] > 100.0f) modelOut[9] = 100.0f;
+		if(modelOut[9] < 2.0f) modelOut[9] = 2.0f;
+		valBinScale = (float)modelOut[9];
+
+		if(modelOut[10] > 1.0f) modelOut[10] = 1.0f;
+		if(modelOut[10] < 0.1f) modelOut[10] = 0.1f;
+		valThetaScale = (float)modelOut[10];
 
 		if(modelOut[11] > 1.0f) modelOut[11] = 1.0f;
 		if(modelOut[11] < 0.1f) modelOut[11] = 0.1f;
-		valThetaScale = (float)modelOut[11];
-
-		if(modelOut[12] > 1.0f) modelOut[12] = 1.0f;
-		if(modelOut[12] < 0.1f) modelOut[12] = 0.1f;
-		valPhiScale = (float)modelOut[12];
+		valPhiScale = (float)modelOut[11];
 
 		std::cout << "Model Running" << std::endl;
 		modelIn.clear();
@@ -910,25 +909,25 @@ void FiveCell::update(glm::mat4 viewMat, glm::vec3 camPos, MachineLearning& mach
 		if(modelOut[7] < -1.0f) modelOut[7] = -1.0f;
 		*m_cspGrainPhaseVariationDistrib = (MYFLT)modelOut[7];
 
-		if(modelOut[8] > 4.0f) modelOut[8] = 4.0f;
-		if(modelOut[8] < 1.0f) modelOut[8] = 1.0f;
-		*m_cspGrainWaveform = (MYFLT)floor(modelOut[8]);
+		//if(modelOut[8] > 4.0f) modelOut[8] = 4.0f;
+		//if(modelOut[8] < 1.0f) modelOut[8] = 1.0f;
+		//*m_cspGrainWaveform = (MYFLT)floor(modelOut[8]);
 
-		if(modelOut[9] > 0.8f) modelOut[9] = 0.8f;
-		if(modelOut[9] < 0.1f) modelOut[9] = 0.1f;
-		sizeVal = (float)modelOut[9];
+		if(modelOut[8] > 0.8f) modelOut[8] = 0.8f;
+		if(modelOut[8] < 0.1f) modelOut[8] = 0.1f;
+		sizeVal = (float)modelOut[8];
 		
-		if(modelOut[10] > 100.0f) modelOut[10] = 100.0f;
-		if(modelOut[10] < 2.0f) modelOut[10] = 2.0f;
-		valBinScale = (float)modelOut[10];
+		if(modelOut[9] > 100.0f) modelOut[9] = 100.0f;
+		if(modelOut[9] < 2.0f) modelOut[9] = 2.0f;
+		valBinScale = (float)modelOut[9];
 		
+		if(modelOut[10] > 1.0f) modelOut[10] = 1.0f;
+		if(modelOut[10] < 0.1f) modelOut[10] = 0.1f;
+		valThetaScale = (float)modelOut[10];
+
 		if(modelOut[11] > 1.0f) modelOut[11] = 1.0f;
 		if(modelOut[11] < 0.1f) modelOut[11] = 0.1f;
-		valThetaScale = (float)modelOut[11];
-
-		if(modelOut[12] > 1.0f) modelOut[12] = 1.0f;
-		if(modelOut[12] < 0.1f) modelOut[12] = 0.1f;
-		valPhiScale = (float)modelOut[12];
+		valPhiScale = (float)modelOut[11];
 
 		bool prevRunMsgState = m_bCurrentRunMsgState;
 		if(m_bRunMsg != prevRunMsgState && m_bRunMsg == true)
