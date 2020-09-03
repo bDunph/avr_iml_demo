@@ -127,6 +127,8 @@ by following the instructions here:
 
 ## Useage
 
+## with VR
+
 ### Controller Setup
 HTC Vive:
  
@@ -153,3 +155,12 @@ Left controller:
 7. Stop the model to freely move around the object without affecting the parameters. This is useful if you find an interesting form and want to investigate.
   
 WARNING: If you try to load a model without saving one first the application will crash.
+
+## without VR
+- space bar -> randomise parameters
+- w -> forward
+- s -> back
+- a -> left
+- d -> right
+
+Interactive machine learning functionality is not available without VR system.
