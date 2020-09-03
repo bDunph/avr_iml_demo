@@ -66,11 +66,11 @@ by following the instructions here:
         - obj_3.vert
         - obj_3.frag
 4. Navigate (cd) to `obj_3/build/src/`.
-5. Type the following command to run the application with one of the examples:
+5. Type the following command to run the application:
     - With VR rendering:
-        `avr audioReactive_example`
+        `avr`
     - Without VR rendering (for development):
-        `avr audioReactive_example -dev`
+        `avr -dev`
 
 ## MacOS:
 
@@ -119,11 +119,11 @@ by following the instructions here:
         - obj_3.vert
         - obj_3.frag
 4. Navigate (cd) to `obj_3/build/src/`.
-5. To run an example project type the following into the terminal:
+5. To run the application type the following into the terminal:
     - With VR rendering (NB. virtual reality rendering has not been tested on macOS and will almost certainly not work at the moment.):
-        `./avr audioReactive_example`
+        `./avr`
     - Without VR (for development):
-        `./avr audioReactive_example -dev`
+        `./avr -dev`
 
 ## Useage
 
