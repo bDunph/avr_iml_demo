@@ -57,15 +57,14 @@ by following the instructions here:
         - openvr_api.dll
         - glew32.dll
         - libsndfile-1.dll
-    - From `obj_3/examples/`:
-        - *_example.csd
-        - *_example.vert
-        - *_example.frag
     - From `obj_3/data/`: 
         - hrtf-48000-left.dat
         - hrtf-48000-right.dat
         - avr_iml_actions.json
         - avr_iml_default_bindings.json
+        - obj_3.csd
+        - obj_3.vert
+        - obj_3.frag
 4. Navigate (cd) to `obj_3/build/src/`.
 5. Type the following command to run the application with one of the examples:
     - With VR rendering:
@@ -110,14 +109,15 @@ by following the instructions here:
     cmake ..
     ```
 2. When CMake has prepared the build files type `make`.
-3. Move the following files: 
-    - From `obj_3/examples/`:
-        - *_example.csd
-        - *_example.vert
-        - *_example.frag
+3. Move the following files to `obj_3/build/src/`: 
     - From `obj_3/data/`:
         - hrtf-48000-left.dat
         - hrtf-48000-right.dat
+        - avr_iml_actions.json
+        - avr_iml_default_bindings.json
+        - obj_3.csd
+        - obj_3.vert
+        - obj_3.frag
 4. Navigate (cd) to `obj_3/build/src/`.
 5. To run an example project type the following into the terminal:
     - With VR rendering (NB. virtual reality rendering has not been tested on macOS and will almost certainly not work at the moment.):
