@@ -173,12 +173,12 @@ bool Graphics::BInitGL(bool fullscreen)
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-	mengerShaderProg = BCreateSceneShaders("mengerGlass");
+	mengerShaderProg = BCreateSceneShaders("obj_3");
 	if(mengerShaderProg == NULL){
 		std::cout << "mengerShaderProg returned NULL: Graphics::BInitGL" << std::endl;
 		return false;
 	}
-	std::string csdFileName = "avr_mandelGrain.csd";
+	std::string csdFileName = "obj_3.csd";
 	if(!fiveCell.setup(csdFileName)) {
 		std::cout << "fiveCell setup failed: Graphics BInitGL" << std::endl;
 		return false;
