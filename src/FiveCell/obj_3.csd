@@ -46,13 +46,6 @@ fsig	pvsanal	ares,	ifftsize,	ioverlap,	iwinsize,	iwinshape
 ioverlap,	inbins,	iwindowsize,	iformat	pvsinfo	fsig
 print	ioverlap,	inbins,	iwindowsize,	iformat		
 
-;inoscs = 250
-;kfmod = 0.5 * kSineControlVal
-;ibinoffset = 2
-;ibinincr = 4
-
-;gaOut	pvsadsyn	fsig,	inoscs,	kfmod,	ibinoffset,	ibinincr
-
 ifn = 1
 kdepth = 0.99 + (0.01 * kSineControlVal)
 
@@ -63,160 +56,8 @@ aOut0	pvsynth	fmask
 
 endin
 
-;;**************************************************************************************
-;instr 2 ; Modal Instrument
-;;**************************************************************************************
-;
-;; get control value from application
-;kSineControlVal	chnget	"sineControlVal"
-;
-;iamp    init ampdbfs(-12)
-;
-;kFreqScale chnget "randFreq" ; random frequency scale value sent from application
-;kWgbowAmpVal chnget "randAmp"
-;kWgbowPressureVal chnget "randPressure"
-;kWgbowPosVal chnget "randPos"
-;
-;; mallet excitator----------------------------------
-;
-;; to simulate the shock between the excitator and the resonator
-;;krand	random	1,	10	
-;;ashock  mpulse ampdbfs(-1), krand,	2
-;;
-;;; felt excitator from mode.csd
-;;;aexc1	mode	ashock,	80 * (kFreqScale + 1.0),	8
-;;aexc1	mode	ashock,	80,	8
-;;aexc1 = aexc1 * iamp
-;;
-;;;aexc2	mode	ashock,	188 * (kFreqScale * 1.0),	3
-;;aexc2	mode	ashock,	188,	3
-;;aexc2 = aexc2 * iamp
-;;
-;;aexc	sum	aexc1,	aexc2
-;
-;; bow excitator-------------------------------------
-;
-;kamp = ampdbfs(-24) * kWgbowAmpVal 
-;kfreq = 55 + kFreqScale 
-;kpres = kWgbowPressureVal
-;krat = kWgbowPosVal 
-;kvibf = 3
-;kvamp = ampdbfs(-24);ampdbfs(-5.995) + (0.01 * kSineControlVal)
-;
-;aexc	wgbow	kamp,	kfreq,	kpres,	krat,	kvibf,	kvamp
-;
-;;"Contact" condition : when aexc reaches 0, the excitator looses 
-;;contact with the resonator, and stops "pushing it"
-;aexc limit	aexc,	0,	3*iamp 
-;
-;; Wine Glass with ratios from http://www.csounds.com/manual/html/MiscModalFreq.html
-;;ares1	mode	aexc,	220 * (kFreqScale + 1),	420 ; A3 fundamental frequency
-;ares1	mode	aexc,	220,	420 ; A3 fundamental frequency
-;
-;ares2	mode	aexc,	510.4,	480
-;
-;ares3	mode	aexc,	935,	500
-;
-;ares4	mode	aexc,	1458.6,	520
-;
-;ares5	mode	aexc,	2063.6,	540; - (kSineControlVal * 100)
-;
-;ares	sum	ares1,	ares2,	ares3,	ares4,	ares5
-;
-;gaOut1 = (aexc + ares) * kSineControlVal 
-;;gaOut1 = aexc + ares
-;	;outs	gaOut1,	gaOut1
-;
-;kRms	rms	gaOut1
-;	chnset	kRms,	"rmsOut"
-;
-;endin
-;
-;;**************************************************************************************
-;instr 3 ; Real-time Spectral Instrument - Mandelbulb Formula Sonification 
-;;**************************************************************************************
-;
-;;iMandelMaxPoints	chnget	"mandelMaxPoints"
-;
-;; get sine control value from application
-;;kSineControlVal		chnget	"sineControlVal"
-;
-;;S_EscapeValChannelNames[] init iMandelMaxPoints
-;
-;ifftsize = 1024 
-;ioverlap = ifftsize / 4
-;iwinsize = ifftsize * 2
-;iwinshape = 0
-;
-;; route output from instrument 2 above to pvsanal
-;fsig	pvsanal	gaOut1,	ifftsize,	ioverlap,	iwinsize,	iwinshape
-;
-;; get info from pvsanal and print
-;ioverlap,	inbins,	iwindowsize,	iformat	pvsinfo	fsig
-;print	ioverlap,	inbins,	iwindowsize,	iformat		
-;
-;; create tables to write frequency data
-;iFreqTable	ftgen	0,	0,	inbins,	2,	0
-;iAmpTable	ftgen	0,	0,	inbins,	2,	0
-;
-;; write frequency data to function table
-;kFlag	pvsftw	fsig,	iAmpTable,	iFreqTable	
-;
-; if kFlag == 0 goto contin 
-;
-;;************** Frequency Processing *****************
-;
-;; modify frequency data from fsig with mandelbulb escape values from application
-;kCount = 0
-;
-;loop:
-;
-;	;S_ChannelName sprintfk	"mandelEscapeVal%d",	kCount
-;
-;	;kMandelVal	chnget	S_ChannelName
-;
-;	; read frequency data from iFreqTable
-;	;kFreq	tablekt	kCount,	iFreqTable
-;	
-;	; read amplitude data from iAmpTable
-;	kAmp	tablekt	kCount,	iAmpTable
-;
-;	; send val out to application
-;	S_ChannelName	sprintfk	"fftAmpBin%d",	kCount
-;	chnset	kAmp,	S_ChannelName
-;	
-;	; multiply kMandelVal with frequency value 
-;	;kProcFreqVal = kFreq * kMandelVal
-;
-;	; write processed freq data back to table
-;	;tablewkt	kProcFreqVal,	kCount,	iFreqTable	
-;
-;	loop_lt	kCount,	1,	inbins,	loop
-;
-;;pvsftr	fsig,	iAmpTable,	iFreqTable
-;
-;contin:
-;
-;; resynthesize the audio signal
-;;aFinalSig	pvsynth	fsig
-;
-;;gaOut2	= aFinalSig
-;
-;;*********** Amplitude processing ******************
-;;ifn = giMandelTable 
-;;kdepth = 0.8 * kSineControlVal
-;;kdepth = 1 
-;
-;; use mandelbulb escape values to modify amplitude values of the signal acting as a spectral filter
-;;fmask	pvsmaska	fsig,	ifn,	kdepth		
-;
-;;gaOut2	pvsynth	fmask
-;	;outs	aOut0,	aOut0
-;
-;endin
-
 ;**************************************************************************************
-instr 7 ; note scheduler
+instr 2 ; note scheduler
 ;**************************************************************************************
 
 kGaussVal gauss 6.0
@@ -224,17 +65,17 @@ kGaussVal gauss 6.0
 seed 0
 kRand random 0.1, 10.0
 
-seed 1
+seed 0
 kRand2 random 1, 5 
 
 kTrigger metro kRand2 
 kMinTim	= 0 
 kMaxNum = 1 
-kInsNum = 8
+kInsNum = 3
 kWhen = 0
-gkDur = kRand 
+kDur = kRand 
 
-schedkwhen kTrigger, kMinTim, kMaxNum, kInsNum, kWhen, gkDur, 1000+kGaussVal, 1400+kGaussVal, 1200+kGaussVal, 800+kGaussVal, 700+kGaussVal, 1000+kGaussVal
+schedkwhen kTrigger, kMinTim, kMaxNum, kInsNum, kWhen, kDur, 1000+kGaussVal, 1400+kGaussVal, 1200+kGaussVal, 800+kGaussVal, 700+kGaussVal, 1000+kGaussVal
 
 aOut oscil 0,	100
 
@@ -243,7 +84,7 @@ outs aOut, aOut
 endin
 
 ;**************************************************************************************
-instr 8 ; Granular Instrument 
+instr 3 ; Granular Instrument 
 ;**************************************************************************************
 
 kCps	chnget	"grainFreq"
@@ -258,28 +99,23 @@ kPrPow	chnget	"grainPhaseVariationDistrib"
 kGDur = 0.01 + kGDur ; initialisation to avoid perf error 0.0
 kDens = 1 + kDens
 
-; get control value from application
-;kSineControlVal	chnget	"sineControlVal"
-
 iMaxOvr = 2000 
 kFn = 3
 
-aOut8    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrPow, kPrPow
+aOut3    grain3  kCps, kPhs, kFmd, kPmd, kGDur, kDens, iMaxOvr, kFn, giWFn, kFrPow, kPrPow
 
 kAmp	linseg 0.0,	p3 * 0.1,	0.95,	p3 * 0.1,	0.8,	p3 * 0.6,	0.8,	p3 * 0.1,	0.0
 
-
-;kfe  expseg 500 + kGaussVal, p3*0.9, 900 + kGaussVal, p3*0.1,800 + kGaussVal 
 kfe  expseg p4, p3*0.3, p5, p3*0.1, p6, p3*0.2, p7, p3*0.3, p8, p3*0.1, p9
 kres linseg 0.1, p3 * 0.2, 0.3, p3 * 0.4, 0.25, p3 * 0.2, 0.5, p3 * 0.2, 0.35	;vary resonance
-afil moogladder aOut8, kfe, kres
+afil moogladder aOut3, kfe, kres
 
 gaGranularOut = afil * kAmp
 
 endin
 
 ;**************************************************************************************
-instr 9 ; Spectral Analysis Instrument 
+instr 4 ; Spectral Analysis Instrument 
 ;**************************************************************************************
 
 ifftsize = 1024 
@@ -324,7 +160,7 @@ contin:
 endin
 
 ;**************************************************************************************
-instr 12 ; 3D Source Location Instrument
+instr 5 ; 3D Source Location Instrument
 ;**************************************************************************************
 kPortTime linseg 0.0, 0.001, 0.05 
 
@@ -361,17 +197,11 @@ f1	0	1025	8	0			2	1	3	0	4	1	6	0	10	1	12	0	16	1	32	0	1	0	939	0
 
 i1	2	10000
 
-;i2	2	10000
+i2	2	10000
 
-;i3	2	10000	
+i4	2	10000
 
-i7	2	10000
-
-;i8	2	10000
-
-i9	2	10000
-
-i12	2	10000
+i5	2	10000
 e
 </CsScore>
 </CsoundSynthesizer>
