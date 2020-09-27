@@ -1,5 +1,7 @@
 # obj_#3 - Bryan Dunphy
 
+This repository contains the source code for the immersive audiovisual composition [obj_#3](https://youtu.be/RdvezMCTt-I).
+
 This is an interactive virtual reality sculpture built using the ImmersAV toolkit. It can be built and installed
 by following the instructions here:
 
