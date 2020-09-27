@@ -1,5 +1,5 @@
-#ifndef FIVE_CELL_HPP
-#define FIVE_CELL_HPP
+#ifndef STUDIO_HPP
+#define STUDIO_HPP
 
 //#define NUM_RAYS 5 
 //#define MAX_MANDEL_STEPS 512 
@@ -18,7 +18,7 @@
 #include "SoundObject.hpp"
 #include "CsoundSession.hpp"
 
-class FiveCell {
+class Studio {
 
 public:
 	

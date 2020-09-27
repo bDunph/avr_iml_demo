@@ -7,7 +7,7 @@
 //#include <glm/gtx/quaternion.hpp>
 //#include <ctime>
 
-#include "FiveCell.hpp"
+#include "Studio.hpp"
 #include "VR_Manager.hpp"
 
 #ifdef __APPLE__ 
@@ -163,7 +163,7 @@ private:
 	GLuint fiveCellShaderProg;
 	GLuint quadShaderProg;
 
-	FiveCell fiveCell;
+	Studio studio;
 	
 	//quad
 	//glm::mat4 quadModelMatrix;
@@ -189,11 +189,11 @@ private:
 	GLuint mengerShaderProg;
 
 	
-	FiveCell::RaymarchData raymarchData;
+	Studio::RaymarchData raymarchData;
 	float m_fFov;
 	
 	//rapidmix
-	FiveCell::MachineLearning machineLearning;
+	Studio::MachineLearning machineLearning;
 
 	//pointer to pointer of 2D dynamic array for storing mandel values from openGL dataTexture
 	//typedef std::unique_ptr<float[]> m_fpDataArrayRow;

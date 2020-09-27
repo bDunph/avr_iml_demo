@@ -179,11 +179,11 @@ bool Graphics::BInitGL(bool fullscreen)
 		return false;
 	}
 	std::string csdFileName = "obj_3.csd";
-	if(!fiveCell.setup(csdFileName)) {
-		std::cout << "fiveCell setup failed: Graphics BInitGL" << std::endl;
+	if(!studio.setup(csdFileName)) {
+		std::cout << "studio setup failed: Graphics BInitGL" << std::endl;
 		return false;
 	}
-	if(!fiveCell.BSetupRaymarchQuad(mengerShaderProg)){
+	if(!studio.BSetupRaymarchQuad(mengerShaderProg)){
 		std::cout << "raymarch quad failed setup: Graphics::BInitGL" << std::endl;
 		return false;
 	}
@@ -877,8 +877,8 @@ void Graphics::UpdateSceneData(std::unique_ptr<VR_Manager>& vrm){
 
 	//if(!m_bPBOFirstFrame) TransferDataToCPU();	
 
-	//update variables for fiveCell
-	fiveCell.update(m_mat4CurrentViewMatrix, cameraPosition, machineLearning, m_vec3ControllerWorldPos[0], m_vec3ControllerWorldPos[1], m_quatController[0], m_quatController[1]);
+	//update variables for studio
+	studio.update(m_mat4CurrentViewMatrix, cameraPosition, machineLearning, m_vec3ControllerWorldPos[0], m_vec3ControllerWorldPos[1], m_quatController[0], m_quatController[1]);
 
 	//std::cout << shaderData.size() << std::endl;
 	// write shaderData to file each frame to see output
@@ -1286,8 +1286,8 @@ void Graphics::RenderScene(vr::Hmd_Eye nEye, std::unique_ptr<VR_Manager>& vrm)
 	//update stuff for raymarching shader
 	raymarchData.aspect = static_cast<float>(m_nRenderWidth) / static_cast<float>(m_nRenderHeight);
 
-	//update variables for fiveCell
-	//fiveCell.update(currentViewMatrix, cameraPosition, machineLearning);
+	//update variables for studio
+	//studio.update(currentViewMatrix, cameraPosition, machineLearning);
 	
 	// draw controllers before scene	
 	if(!m_bDevMode && vrm){
@@ -1328,8 +1328,8 @@ void Graphics::RenderScene(vr::Hmd_Eye nEye, std::unique_ptr<VR_Manager>& vrm)
 		glUseProgram(0);
 	}
 
-	//draw fiveCell scene
-	fiveCell.draw(currentProjMatrix, m_mat4CurrentViewMatrix, currentEyeMatrix, raymarchData, mengerShaderProg);
+	//draw studio scene
+	studio.draw(currentProjMatrix, m_mat4CurrentViewMatrix, currentEyeMatrix, raymarchData, mengerShaderProg);
 
 }
 
@@ -1464,7 +1464,7 @@ void Graphics::CleanUpGL(std::unique_ptr<VR_Manager>& vrm){
 
 		glfwTerminate();
 
-		fiveCell.exit();
+		studio.exit();
 	}
 }
 
